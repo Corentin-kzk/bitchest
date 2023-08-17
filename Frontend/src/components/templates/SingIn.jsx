@@ -31,18 +31,16 @@ function Copyright(props) {
 
 
 export default function SignIn() {
+  const [errors , setErrors] = React.useState('')
+  console.log(errors);
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-
-    console.log({
+   const {login} = await useAuth() 
+   login({
       email: data.get('email'),
       password: data.get('password'),
-    });
-   await useAuth({
-      email: data.get('email'),
-      password: data.get('password'),
-    })
+    }, setErrors)
   };
 
   return (

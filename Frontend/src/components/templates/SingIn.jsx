@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { useAuth } from '../../hooks/useAuth';
+import Image from '../atom/Image';
 
 
 function Copyright(props) {
@@ -55,7 +56,8 @@ export default function SignIn() {
           }}
         >
           <div>
-             <img src='/bitchest_logo.png' />
+          <Image src={'/bitchest_logo.png'} width={'300px'} height={'150px'}/>
+             
           </div>
           <Typography component="h1" variant="h5">
             Sign in
@@ -93,6 +95,7 @@ export default function SignIn() {
             >
               Sign In
             </Button>
+            <Typography color={'red'} >{errors}</Typography>
             <Grid container>
               <Grid item xs>
                 <Link href="#" variant="body2">

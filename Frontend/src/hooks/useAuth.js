@@ -4,17 +4,17 @@ export const useAuth =  () => {
     const csrf = async () => await axios.get('/sanctum/csrf-cookie');
 
     const login = async ( credentials ,setErrors, setSuccessResponse ) => {
-        console.log('credential :' , credentials);
+
         await csrf()
         axios
             .post('/login', credentials)
             .then((res) => {
                 console.log(res);
-                //   setSuccessResponse();
+                  setSuccessResponse();
                   navigate('/dashboard');
               })
             .catch(error => {
-                setErrors(error)
+                setErrors(error.response.data.message)
             })
     }
     return {

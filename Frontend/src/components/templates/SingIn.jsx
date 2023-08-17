@@ -11,6 +11,7 @@ import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
+import { useAuth } from '../../hooks/useAuth';
 
 
 function Copyright(props) {
@@ -27,14 +28,21 @@ function Copyright(props) {
 }
 
 
+
+
 export default function SignIn() {
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+
     console.log({
       email: data.get('email'),
       password: data.get('password'),
     });
+   await useAuth({
+      email: data.get('email'),
+      password: data.get('password'),
+    })
   };
 
   return (

@@ -6,6 +6,9 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import { Provider } from 'react-redux'
+import store from './store';
+
 
 
 const customPalette = {
@@ -24,9 +27,11 @@ function App() {
   const queryClient = new QueryClient()
   return (
     <QueryClientProvider client={queryClient}>
+      <Provider store={store}>
       <ThemeProvider theme={defaultTheme}>
         <RouterProvider router={router} />
       </ThemeProvider>
+      </Provider>
       <ReactQueryDevtools initialIsOpen={true} />
     </QueryClientProvider>
   )

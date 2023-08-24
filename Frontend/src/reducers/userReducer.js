@@ -1,16 +1,15 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getUser } from "../api/user";
 
-let initialState = {};
+let initialState = {user: null};
 
-const user = getUser()
 
+
+const user = JSON.parse(sessionStorage.getItem("user"))
+console.log(user);
 if (user) {
   initialState = { user: user };
-} else {
-  initialState = { user: null };
-}
-
+} 
 export const userSlice = createSlice({
   name: "user",
   initialState,

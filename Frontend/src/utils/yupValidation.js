@@ -8,6 +8,6 @@ export const validationSchema = {
       .required(globalError.emailRequired),
     password: yup.string()
       .min(6, globalError.password)
-      .required(globalError.passwordRequired),
+      .required(globalError.passwordRequire),
   }),
 };

@@ -9,13 +9,15 @@ import {
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux'
 import store from './store';
-import { Typography } from '@mui/material';
 
 
 
 const customPalette = {
   primary: {
     main: '#01e119',
+  },
+  secondary: {
+    main: '#FFFFF'
   }
 };
 const defaultTheme = createTheme({

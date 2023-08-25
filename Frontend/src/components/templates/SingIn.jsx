@@ -18,10 +18,10 @@ import { globalError } from "../../utils/globalErrors";
 import { red } from "@mui/material/colors";
 
 export default function SignIn() {
-  const [showPassword, setShowPassword] = useState(false);
-  const handleClickShowPassword = () => setShowPassword(!showPassword);
-  const handleMouseDownPassword = () => setShowPassword(!showPassword);
-  const dispatch = useDispatch();
+  const [showPassword, setShowPassword] = useState(false)
+  const handleClickShowPassword = () => setShowPassword(!showPassword)
+  const handleMouseDownPassword = () => setShowPassword(!showPassword)
+  const dispatch = useDispatch()
 
   const navigate = useNavigate()
 
@@ -31,10 +31,10 @@ export default function SignIn() {
       email: "",
     },
     onSubmit: async (values, { setErrors }) => {
+      
       await csrf();
       try {
         const res = await axios.post("/login", values);
-        console.log(res?.data?.user);
         if (res?.data?.user) {
           sessionStorage.setItem("user", JSON.stringify(res?.data?.user))
           dispatch(setUser(res?.data?.user));
@@ -44,13 +44,11 @@ export default function SignIn() {
         setErrors({
           email: error?.response?.data?.message || globalError.pleaseTryLater,
         });
-        console.log();
       }
     },
   });
 
   const { handleSubmit, errors } = formik;
-  console.log(errors);
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />

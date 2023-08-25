@@ -1,5 +1,5 @@
 import './App.css'
-import {  QueryClient, QueryClientProvider} from '@tanstack/react-query'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import router from './router/router';
 import {
@@ -33,9 +33,9 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
-      <ThemeProvider theme={defaultTheme}>
-        <RouterProvider router={router} />
-      </ThemeProvider>
+        <ThemeProvider theme={defaultTheme}>
+            <RouterProvider router={router} />
+        </ThemeProvider>
       </Provider>
       <ReactQueryDevtools initialIsOpen={true} />
     </QueryClientProvider>

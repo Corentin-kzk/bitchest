@@ -1,5 +1,5 @@
-const Index = () => {
-    return <div>index</div>;
+const IndexPage = () => {
+    return <div>Index</div>;
 }
  
-export default Index;
+export default IndexPage;

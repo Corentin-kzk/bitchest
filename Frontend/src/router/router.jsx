@@ -1,9 +1,10 @@
 import { createBrowserRouter } from "react-router-dom";
 import SignIn from "../components/templates/SingIn";
-import Index from "../pages/Index";
+import IndexPage from "../pages/Index";
 import Dashboard from "../components/templates/Dashboard";
 import ProtectedAdmin from "../components/templates/ProtectedAdmin";
 import { linkUrl } from "../utils/linkUrl";
+import UsersPage from "../pages/Users";
 
 const router = createBrowserRouter([
   {
@@ -16,7 +17,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "",
-        element: <Index />,
+        element: <IndexPage />,
       },
       {
         path: linkUrl.admin,
@@ -24,7 +25,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: linkUrl.users,
-            element: <Index />
+            element: <UsersPage />
           }
         ]
       },

@@ -93,8 +93,6 @@ export default function Dashboard() {
     localStorage.removeItem("user");
     navigate("/");
   };
-  
-  console.log("🚀 ~ file: Dashboard.jsx:84 ~ Dashboard ~ user:", user)
   return (
     <>
         <Box sx={{ display: "flex" }}>
@@ -119,7 +117,7 @@ export default function Dashboard() {
               </IconButton>
               <Box color="inherit" sx={{ position: 'relative', flexGrow: 1 }}>
                 <Image src={"/bitchest_logo.png"} width={"100px"} height={"50px"} />
-                {isEqual(user.role, 'admin') && <Typography sx={{ position: 'absolute', top: "50%", left: "100px", fontSize: '8px' }} >Admin</Typography>}
+                {isEqual(user?.role, 'admin') && <Typography sx={{ position: 'absolute', top: "50%", left: "100px", fontSize: '8px' }} >Admin</Typography>}
               </Box>
 
               <IconButton color="inherit">
@@ -147,7 +145,7 @@ export default function Dashboard() {
             </Toolbar>
             <Divider />
             <List component="nav">
-              {isEqual(user.role, 'admin') &&
+              {isEqual(user?.role, 'admin') &&
                 <ListItemButton component="a" href="/dashboard/admin/users">
                   <ListItemIcon>
                     <PeopleIcon />

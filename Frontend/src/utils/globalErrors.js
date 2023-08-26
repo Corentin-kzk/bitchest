@@ -5,3 +5,7 @@ export const globalError = {
     passwordRequire: 'Le mot de passe est requis',
     pleaseTryLater:  "Un problème s'est produit. Veuillez réessayer plus tard."
 }
+
+export const ApiError = {
+    pleaseTryLater: "Impossible de contacter le serveur, veuillez réessayer plus tard."
+}

@@ -9,6 +9,7 @@ import {
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux'
 import store from './store';
+import { dark } from '@mui/material/styles/createPalette';
 
 
 
@@ -17,7 +18,10 @@ const customPalette = {
     main: '#01e119',
   },
   secondary: {
-    main: '#FFFFF'
+    main: '#ff6f00',
+    dark:'#b24d00',
+    light: '#ff8b33',
+    contrastText: '#000',
   }
 };
 const defaultTheme = createTheme({

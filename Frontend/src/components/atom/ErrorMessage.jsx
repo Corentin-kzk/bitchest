@@ -1,12 +1,5 @@
-import styled from "styled-components"
+import { Alert } from "@mui/material"
 
-const Error = styled.div`
-
-
-`
-
-const ErrorMessage = ({error}) => {
-return <Error>
-    {error}
-</Error>
+export const ErrorMessage = ({children}) => {
+    return <Alert severity="error">{children}</Alert>
 }

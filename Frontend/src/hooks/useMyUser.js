@@ -1,10 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { getUser } from "../api/user";
+import { getMyUser } from "../api/me";
+
 
 const useMyUser = () => {
  const {isError, data: user, isSuccess}= useQuery({
     queryKey: [userQueryKey],
-    queryFn: getUser()
+    queryFn: getMyUser()
  })
     return {user, isError, isSuccess};
 }

@@ -10,6 +10,8 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { Provider } from 'react-redux'
 import store from './store';
 import { dark } from '@mui/material/styles/createPalette';
+import Alert from './components/atom/Alert';
+
 
 
 
@@ -19,7 +21,7 @@ const customPalette = {
   },
   secondary: {
     main: '#ff6f00',
-    dark:'#b24d00',
+    dark: '#b24d00',
     light: '#ff8b33',
     contrastText: '#000',
   }
@@ -38,7 +40,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>
         <ThemeProvider theme={defaultTheme}>
-            <RouterProvider router={router} />
+          <RouterProvider router={router} />
+          <Alert/>
         </ThemeProvider>
       </Provider>
       <ReactQueryDevtools initialIsOpen={true} />

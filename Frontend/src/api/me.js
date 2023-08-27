@@ -4,10 +4,6 @@ import { csrf } from "./crsf";
 
 export const getMyUser = async () => {
     await csrf()
-    try {
-        const user = await axios.get('/me')
-        return user
-    } catch (error) {
-        return null
-    }
+    const user = await axios.get('api/me')
+    return user.data
 }

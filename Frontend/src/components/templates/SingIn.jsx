@@ -16,12 +16,16 @@ import { useNavigate } from "react-router";
 import { csrf } from "../../api/crsf";
 import { globalError } from "../../utils/globalErrors";
 import { red } from "@mui/material/colors";
+import { useSession } from "../../hooks/useSession";
+import { useMutation } from "@tanstack/react-query";
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
   const handleClickShowPassword = () => setShowPassword(!showPassword)
   const handleMouseDownPassword = () => setShowPassword(!showPassword)
+  const loginMutation = useMutation({ mutationFn: async (values) => await axios.post("/login", values) })
   const dispatch = useDispatch()
+  const { setValue } = useSession()
 
   const navigate = useNavigate()
 
@@ -31,20 +35,20 @@ export default function SignIn() {
       email: "",
     },
     onSubmit: async (values, { setErrors }) => {
-
       await csrf();
-      try {
-        const res = await axios.post("/login", values);
-        if (res?.data?.user) {
-          sessionStorage.setItem("user", JSON.stringify(res?.data?.user))
+      loginMutation.mutateAsync(values, {
+        onSuccess: (res) => {          
+          setValue(res?.data?.user)
           dispatch(setUser(res?.data?.user));
           navigate("/dashboard");
+        }, onError: (error) => {
+          console.log("🚀 ~ file: SingIn.jsx:47 ~ onSubmit: ~ error:", error)
+          setErrors({
+            email: error?.response?.data?.message || globalError.pleaseTryLater,
+          });
         }
-      } catch (error) {
-        setErrors({
-          email: error?.response?.data?.message || globalError.pleaseTryLater,
-        });
-      }
+      })
+
     },
   });
 

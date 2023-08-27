@@ -15,12 +15,13 @@ import TableHead from '@mui/material/TableHead';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import DialogForm from "../components/molecule/DialogForm";
+import DialogDelete from "../components/molecule/DialogDelete";
 
 const columns = [
-    { id: 'id', label: <Tag />, minWidth: 60 },
+    { id: 'id', label: <Tag />,align: 'center', minWidth: 60 },
     { id: 'name', label: <Box sx={{ display: "flex", alignItems: 'center' }}><Person /><Typography fontSize="12px">Nom</Typography> </Box>, minWidth: 170 },
     { id: 'email', label: <Box sx={{ display: "flex", alignItems: 'center' }}><Email /><Typography fontSize="12px">Email</Typography> </Box>, minWidth: 170 },
-    { id: 'role', label: <Box sx={{ display: "flex", alignItems: 'center' }}><Badge /><Typography fontSize="12px">Role</Typography> </Box>, minWidth: 100, format: (value) => isEqual(value, 'admin') ? <SupportAgent /> : <Person /> },
+    { id: 'role', label: <Box sx={{ display: "flex", alignItems: 'center' }}><Badge /><Typography fontSize="12px">Role</Typography> </Box>,align: 'center', minWidth: 100, format: (value) => isEqual(value, 'admin') ? <SupportAgent /> : <Person /> },
     { id: 'editOrDelete', label: <ManageAccounts />, align: 'center', minWidth: 60 }
 ];
 
@@ -30,6 +31,8 @@ function UsersPage() {
     const [rowOnPage, setRowOnPage] = useState(10)
     const [filter, setFilter] = useState('name')
     const [openEditId, setOpenEditId] = useState(null)
+    const [isAddingUser, setIsAddingUser] = useState(false)
+    const [isDeleting, setIsDeleting] = useState(false)
 
     const { data, isFetching, isError } = useQuery({
         queryKey: [User_QK, searchValue, rowOnPage, page],
@@ -53,9 +56,14 @@ function UsersPage() {
     const handleSearch = (event) => {
         setSearchValue(event.target.value)
     }
-
     const handleCloseEdit = () => {
         setOpenEditId(null)
+    }
+    const handleCloseCreate = () => {
+        setIsAddingUser(false)
+    }
+    const handleCloseDeleting = () => {
+        setIsDeleting(false)
     }
 
     return (<>
@@ -91,7 +99,7 @@ function UsersPage() {
                         </Select>
                     </FormControl>
                 </Box>
-                <Button variant="outlined" color="secondary" >Ajouter un utilisateur </Button>
+                <Button variant="outlined" color="secondary" onClick={() => setIsAddingUser(true)} >Ajouter un utilisateur </Button>
             </Box>
             <TableContainer sx={{ maxHeight: '65vh' }}>
                 <Table stickyHeader>
@@ -138,11 +146,11 @@ function UsersPage() {
                                                 return (
                                                     <TableCell key={column.id} align={column.align}>
                                                         {column.id === 'editOrDelete' ? <>
-                                                            <Button color="error"  >
-                                                                <Delete />
-                                                            </Button>
                                                             <Button color="secondary" onClick={() => setOpenEditId(row.id)} >
                                                                 <Edit />
+                                                            </Button>
+                                                            <Button color="error" onClick={() => setIsDeleting(row.id)} >
+                                                                <Delete />
                                                             </Button>
                                                         </> : column.format
                                                             ? <Tooltip title={value}>{column.format(value)}</Tooltip>
@@ -168,7 +176,9 @@ function UsersPage() {
                 onRowsPerPageChange={handleChangeRows}
             />
         </Paper>
-        <DialogForm id={openEditId} handleClose={handleCloseEdit} />
+        <DialogForm id={openEditId} isEdit handleClose={handleCloseEdit} />
+        <DialogForm id={isAddingUser} handleClose={handleCloseCreate} />
+        <DialogDelete id={isDeleting} handleClose={handleCloseDeleting}  />
     </>);
 }
 

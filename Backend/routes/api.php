@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\CryptoCurrenciesController;
 use App\Http\Controllers\API\UserController;
 use App\Models\CryptoCurrencies;
 use Illuminate\Http\Request;
@@ -23,7 +24,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::middleware(['isAdmin'])->group(function () {
         Route::apiResource('users', UserController::class);
     });
-    Route::apiResource('cryptos', CryptoCurrencies::class);
+    Route::apiResource('cryptos', CryptoCurrenciesController::class);
 });
 
 

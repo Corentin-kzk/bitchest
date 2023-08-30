@@ -38,22 +38,28 @@ class CryptoCurrenciesFactory extends Factory
 
 
         $date = Carbon::now()->subDays(29);
+        $open = $this->getFirstCotation($name); // Prix d'ouverture initial
+        $high = $open;
+        $low = $open;
+        $close = $open;
 
         $cotations = [
             [
-                'date' => $date->toDateString(),
-                'cotation' => $this->getFirstCotation($name)
-            ],
+                'x' => $date->toDateString(),
+                'y' => [$open, $high, $low, $close]
+            ]
         ];
+
         for ($day = 1; $day <= 29; $day++) {
             $previousCotation = end($cotations);
-            $cotation = $previousCotation['cotation'] + $this->getCotationFor($name);
-
-            $cotation = max(0, $cotation);
+            $open = $previousCotation['y'][3];
+            $high = $open + max($this->getCotationFor($name), 0);
+            $low = $open + min($this->getCotationFor($name), 0);
+            $close = $this->getCotationFor($name) + $open;
 
             $cotations[] = [
-                'date' => $date->toDateString(),
-                'cotation' => $cotation
+                'x' => $date->toDateString(),
+                'y' => [$open, $high, $low, $close]
             ];
 
             $date->addDay();

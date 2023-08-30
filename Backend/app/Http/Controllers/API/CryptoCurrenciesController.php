@@ -13,8 +13,8 @@ class CryptoCurrenciesController extends Controller
      */
     public function index()
     {
-       $Crypto = CryptoCurrencies::all();
-       return response()->json($Crypto, 200);
+       $cryptocurrencies  = CryptoCurrencies::all();
+       return response()->json($cryptocurrencies );
     }
 
     /**

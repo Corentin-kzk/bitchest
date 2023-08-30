@@ -20,5 +20,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'Admin@bitchest.com',
             'role'=> 'admin'
         ]);
+
+        $this->call([CryptoSeeder::class]);
     }
 }

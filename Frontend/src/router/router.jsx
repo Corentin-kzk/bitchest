@@ -1,44 +1,58 @@
-import { createBrowserRouter } from "react-router-dom";
-import SignIn from "../components/templates/SingIn";
-import IndexPage from "../pages/Index";
-import Dashboard from "../components/templates/Dashboard";
-import { linkUrl } from "../utils/linkUrl";
-import UsersPage from "../pages/Users";
-import ProtectedAdmin from "../components/middleware/MiddlewareAdmin";
-import IsConnected from "../components/middleware/MiddlewareConected";
+import { createBrowserRouter } from 'react-router-dom'
+import SignIn from '../components/organism/SingIn'
+import IndexPage from '../pages/Index'
+import Dashboard from '../components/organism/Dashboard'
+import { linkUrl } from '../utils/linkUrl'
+import UsersPage from '../pages/Users'
+import ProtectedAdmin from '../components/middleware/MiddlewareAdmin'
+import IsConnected from '../components/middleware/MiddlewareConected'
+import { Page500 } from '../components/organism/Page500'
+import { CryptoPage } from '../pages/CryptoPage'
+import { Page404 } from '../pages/Page404'
 
 const router = createBrowserRouter([
   {
-    path: "/",
+    path: '/',
     element: <SignIn />,
   },
   {
-    path: "",
-    element: <IsConnected/>,
-    children : [
+    path: '/500',
+    element: <Page500 />,
+  },
+  {
+    path: '*',
+    element: <Page404 />,
+  },
+  {
+    path: '',
+    element: <IsConnected />,
+    children: [
       {
         path: linkUrl.home,
         element: <Dashboard />,
         children: [
           {
-            path: "",
+            path: '',
             element: <IndexPage />,
           },
           {
+            path: linkUrl.cryptoId,
+            element: <CryptoPage />,
+          },
+          {
             path: linkUrl.admin,
-            element: <ProtectedAdmin/>,
+            element: <ProtectedAdmin />,
             children: [
               {
                 path: linkUrl.users,
-                element: <UsersPage />
-              }
-            ]
+                element: <UsersPage />,
+              },
+            ],
           },
         ],
-    
       },
-    ]
+    ],
   },
-]);
+])
 
-export default router;
+export default router

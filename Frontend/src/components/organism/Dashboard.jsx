@@ -21,7 +21,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PeopleIcon from "@mui/icons-material/People";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import LayersIcon from "@mui/icons-material/Layers";
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useNavigate, useLocation } from "react-router";
 import { Logout } from "@mui/icons-material";
 import Image from "../atom/Image";
 import axios from "../../api/config";
@@ -86,7 +86,7 @@ export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const { destroySession } = useSession()
   const userMutation = useMutation({ mutationFn: async () => await axios.post("/logout") })
-
+  const location = useLocation();
   const navigate = useNavigate()
   const toggleDrawer = () => {
     setOpen(!open);
@@ -100,6 +100,7 @@ export default function Dashboard() {
       }
     })
   };
+
   return (
     <>
       <Box sx={{ display: "flex" }}>
@@ -153,14 +154,14 @@ export default function Dashboard() {
           <Divider />
           <List component="nav">
             {isEqual(user?.role, 'admin') &&
-              <ListItemButton component="a" href="/dashboard/admin/users">
+              <ListItemButton component="a" href="/dashboard/admin/users" selected={location.pathname === "/dashboard/admin/users"}>
                 <ListItemIcon>
                   <PeopleIcon />
                 </ListItemIcon>
                 <ListItemText primary="Customers" />
               </ListItemButton>
             }
-            <ListItemButton component="a" href="/dashboard">
+            <ListItemButton component="a" href="/dashboard" selected={location.pathname === '/dashboard'}>
               <ListItemIcon>
                 <DashboardIcon />
               </ListItemIcon>

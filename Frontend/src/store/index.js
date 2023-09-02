@@ -4,7 +4,7 @@ import alertReducer from '../reducers/alertReducer'
 
 export default configureStore({
   reducer: {
-   user: userReducer,
-   alert: alertReducer
+    user: userReducer,
+    alert: alertReducer,
   },
 })

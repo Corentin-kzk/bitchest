@@ -1,3 +1,3 @@
-import axios from "./config";
+import axios from './config'
 
-export const csrf = async () => await axios.get("/sanctum/csrf-cookie");
+export const csrf = async () => await axios.get('/sanctum/csrf-cookie')

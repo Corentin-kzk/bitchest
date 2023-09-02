@@ -59,7 +59,7 @@ class CryptoCurrenciesFactory extends Factory
 
             $cotations[] = [
                 'x' => $date->toDateString(),
-                'y' => [$open, $high, $low, $close]
+                'y' => [round($open, 4), round($high, 4), round($low, 4), round($close, 4)]
             ];
 
             $date->addDay();

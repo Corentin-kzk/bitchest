@@ -1,14 +1,14 @@
 import { createBrowserRouter } from 'react-router-dom'
-import SignIn from '../components/organism/SingIn'
-import IndexPage from '../pages/Index'
-import Dashboard from '../components/organism/Dashboard'
+import SignIn from '@components/organism/SingIn'
+import IndexPage from '@pages/Index'
+import Dashboard from '@components/organism/Dashboard'
 import { linkUrl } from '../utils/linkUrl'
-import UsersPage from '../pages/Users'
-import ProtectedAdmin from '../components/middleware/MiddlewareAdmin'
-import IsConnected from '../components/middleware/MiddlewareConected'
-import { Page500 } from '../components/organism/Page500'
-import { CryptoPage } from '../pages/CryptoPage'
-import { Page404 } from '../pages/Page404'
+import UsersPage from '@pages/Users'
+import ProtectedAdmin from '@components/middleware/MiddlewareAdmin'
+import IsConnected from '@components/middleware/MiddlewareConected'
+import { Page500 } from '@pages/Page500'
+import { CryptoPage } from '@pages/CryptoPage'
+import { Page404 } from '@pages/Page404'
 
 const router = createBrowserRouter([
   {

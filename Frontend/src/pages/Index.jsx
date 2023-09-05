@@ -1,120 +1,215 @@
 import { useQuery } from '@tanstack/react-query'
 import { Crypto_QK, getCryptos } from '../api/crypto'
-import Chart from 'react-apexcharts'
-import Grid from '@mui/material/Unstable_Grid2'
 import {
-  AppBar,
   Box,
-  Link,
+  Button,
+  FormControl,
   Paper,
-  Tab,
-  Tabs,
-  Toolbar,
-  styled,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TextField,
+  Typography,
 } from '@mui/material'
 import { Loader } from '@components/atom/Loader'
-import { Navigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
+import { ApiError } from '../utils/globalErrors'
+import { useState } from 'react'
+import { Euro } from '@mui/icons-material'
 import { linkUrl } from '../utils/linkUrl'
 
+const columns = [
+  {
+    id: 'label',
+    label: (
+      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Typography fontSize='12px'>Nom</Typography>{' '}
+      </Box>
+    ),
+    minWidth: 170,
+  },
+  {
+    id: 'price',
+    label: (
+      <Box sx={{ display: 'flex' }}>
+        <Euro></Euro>
+      </Box>
+    ),
+    minWidth: 170,
+  },
+  {
+    id: 'link',
+    label: '',
+  },
+]
+
 const IndexPage = () => {
+  const [searchValue, setSearchValue] = useState('')
   const { data, isFetching, isError } = useQuery({
-    queryKey: [Crypto_QK],
-    queryFn: () => getCryptos(),
+    queryKey: [Crypto_QK, searchValue],
+    queryFn: () => getCryptos(searchValue),
     refetchOnWindowFocus: false,
   })
 
-  const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-  }))
-
+  const navigate = useNavigate()
   if (isError) return <Navigate to={'/500'} />
   return (
-    <div>
-      {isFetching && (
+    <Paper sx={{ width: '100%' }}>
+      <Box
+        sx={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          p: 2,
+        }}
+      >
         <Box
-          sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            minHeight: '80vh',
-          }}
+          component='form'
+          noValidate
+          sx={{ display: 'flex', alignItems: 'center' }}
         >
-          <Loader />
+          <FormControl sx={{ mx: 1 }} variant='standard'>
+            <TextField
+              margin='normal'
+              fullWidth
+              id='search'
+              label='search'
+              name='search'
+              autoComplete='search'
+              autoFocus
+              value={searchValue}
+              onChange={(e) => setSearchValue(e.target.value)}
+            />
+          </FormControl>
         </Box>
-      )}
-      {!isFetching && (
-        <>
-          <AppBar position='static' sx={{ mb: 2 }} color='secondary'>
-            <Toolbar>
-              <Tabs variant='scrollable' scrollButtons='auto'>
-                {data?.map((element) => {
+      </Box>
+      <TableContainer sx={{ maxHeight: '70vh' }}>
+        <Table stickyHeader>
+          <TableHead>
+            <TableRow>
+              {columns.map((column) => (
+                <TableCell
+                  key={column.id}
+                  align={column.align}
+                  style={{
+                    minWidth: column.minWidth,
+                    maxWidth: column.maxWidth,
+                  }}
+                >
+                  {column.label}
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            <>
+              {isFetching && (
+                <TableRow>
+                  <TableCell colSpan={4}>
+                    <Box
+                      sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        my: '10px',
+                      }}
+                    >
+                      <Loader />
+                    </Box>
+                  </TableCell>
+                </TableRow>
+              )}
+              {isError && (
+                <TableRow>
+                  <TableCell colSpan={4}>
+                    <ErrorMessage>{ApiError.pleaseTryLater}</ErrorMessage>
+                  </TableCell>
+                </TableRow>
+              )}
+              {!isFetching &&
+                !isError &&
+                data.map((row) => {
                   return (
-                    <Tab
-                      label={element.label}
-                      value='crypto/:id'
-                      href={`${linkUrl.cryptoId.replace(':id', element.id)}`}
-                      component={Link}
-                    />
+                    <TableRow
+                      hover
+                      role='checkbox'
+                      tabIndex={-1}
+                      key={row.code}
+                    >
+                      {columns.map((column) => {
+                        const value = row[column.id]
+                        switch (column.id) {
+                          case 'label':
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '10px',
+                                  }}
+                                >
+                                  <img src={row.logo} />
+                                  <Typography>
+                                    {value}{' '}
+                                    <Typography
+                                      component='span'
+                                      fontSize={'10px'}
+                                    >
+                                      ({row.symbol})
+                                    </Typography>
+                                  </Typography>
+                                </Box>
+                              </TableCell>
+                            )
+                          case 'price':
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                  }}
+                                >
+                                  <Typography>{value}</Typography>
+                                  <Euro fontSize='8px' />
+                                </Box>
+                              </TableCell>
+                            )
+                          case 'link':
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                <Button
+                                  onClick={() =>
+                                    navigate(
+                                      linkUrl.cryptoId.replace(':id', row.id)
+                                    )
+                                  }
+                                >
+                                  {row.label}
+                                </Button>
+                              </TableCell>
+                            )
+                          default:
+                            return (
+                              <TableCell key={column.id} align={column.align}>
+                                {value}
+                              </TableCell>
+                            )
+                        }
+                      })}
+                    </TableRow>
                   )
                 })}
-              </Tabs>
-            </Toolbar>
-          </AppBar>
-          <Grid container spacing={2}>
-            {data?.map((element) => {
-              const chartopt = {
-                options: {
-                  chart: {
-                    type: 'candlestick',
-                    height: 350,
-                  },
-                  title: {
-                    text: `${element.label} Chart`,
-                    align: 'left',
-                  },
-                  xaxis: {
-                    type: 'datetime',
-                  },
-                  yaxis: {
-                    tooltip: {
-                      enabled: true,
-                    },
-
-                    forceNiceScale: true,
-                  },
-                },
-              }
-              const series = {
-                series: [
-                  {
-                    data: JSON.parse(element.history),
-                  },
-                ],
-              }
-              return (
-                <>
-                  <Grid xs={12} sm={6} lg={4} xl={3}>
-                    <Item>
-                      <img src={element.logo} />
-                      <Chart
-                        options={chartopt.options}
-                        series={series.series}
-                        type='candlestick'
-                        width='100%'
-                      />
-                    </Item>
-                  </Grid>
-                </>
-              )
-            })}
-          </Grid>
-        </>
-      )}
-    </div>
+            </>
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Paper>
   )
 }
 

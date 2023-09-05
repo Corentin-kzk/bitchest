@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\CryptoCurrenciesController;
 use App\Http\Controllers\API\UserController;
 use App\Models\CryptoCurrencies;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,14 +20,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/me', function (Request $request) {
-        return $request->user();
+        return User::with('wallet')->find($request->user()->id);
     });
     Route::middleware(['isAdmin'])->group(function () {
         Route::apiResource('users', UserController::class);
     });
     Route::apiResource('cryptos', CryptoCurrenciesController::class);
 });
-
-
-
-

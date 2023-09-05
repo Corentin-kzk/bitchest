@@ -11,7 +11,14 @@ class CryptoCurrencies extends Model
 
     protected $fillable = [
         'label',
-        'history',
         'symbol',
     ];
+    protected $hidden = [
+        'updated_at',
+        'created_at'
+    ];
+    public function history()
+    {
+        return $this->hasMany(CryptoHistory::class, 'crypto_currency_id');
+    }
 }

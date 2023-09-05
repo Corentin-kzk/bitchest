@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 const getUserFromSession = () => {
-  const user = JSON.parse(sessionStorage.getItem('user'))
+  const user = JSON.parse(sessionStorage.getItem('session'))
   return user ? user : null
 }
 
@@ -14,7 +14,7 @@ export const userSlice = createSlice({
   initialState,
   reducers: {
     setUser: (state, action) => {
-      state.user = action.payload.user
+      state.user = action.payload
     },
   },
 })

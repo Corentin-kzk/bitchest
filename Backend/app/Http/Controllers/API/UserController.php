@@ -4,14 +4,16 @@ namespace App\Http\Controllers\API;
 
 use App\Models\User;
 use App\Http\Controllers\Controller;
+use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::query();
+        $query = User::query()->with('wallet');
 
         if ($request->has('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
@@ -22,21 +24,33 @@ class UserController extends Controller
         $perPage = $request->input('per_page', 10);
         $page = $request->input('page', 1);
         $users = $query->paginate($perPage, ['id', 'name', 'role', 'email'], 'page', $page);
-    
+
         return response()->json($users, 200);
     }
-    
+
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
         $user = new User();
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->password = Hash::make($request->input('password'));
         $user->save();
-    
+        $wallet = new Wallet();
+
+        $user->wallet()->save($wallet);
+
         return response()->json($user, 201);
     }
-    
+
     public function show($id)
     {
         $user = User::find($id);
@@ -45,29 +59,29 @@ class UserController extends Controller
         }
         return response()->json($user);
     }
-    
+
     public function update(Request $request, $id)
     {
         $user = User::find($id);
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
-    
+
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         $user->role = $request->input('role');
         $user->save();
-    
+
         return response()->json($user);
     }
-    
+
     public function destroy($id)
     {
         $user = User::find($id);
         if (!$user) {
             return response()->json(['message' => 'User not found'], 404);
         }
-    
+
         $user->delete();
         return response()->json(['message' => 'User deleted'], 200);
     }

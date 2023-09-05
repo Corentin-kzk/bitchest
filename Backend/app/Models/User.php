@@ -46,6 +46,15 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
+    public function History()
+    {
+        return $this->hasMany(CryptoHistory::class);
+    }
+
+    public function Wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
     public function hasRole($role)
     {
         return $this->role === $role;

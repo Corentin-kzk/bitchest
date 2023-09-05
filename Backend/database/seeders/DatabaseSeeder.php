@@ -6,6 +6,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use \App\Models\User;
 
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -18,7 +19,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'Admin',
             'email' => 'Admin@bitchest.com',
-            'role'=> 'admin'
+            'role' => 'admin',
         ]);
 
         $this->call([CryptoSeeder::class]);

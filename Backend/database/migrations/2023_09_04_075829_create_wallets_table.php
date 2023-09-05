@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('crypto_currencies', function (Blueprint $table) {
+        Schema::create('wallets', function (Blueprint $table) {
             $table->id();
             $table->timestamps();
-            $table->string('label');
-            $table->string('logo')->nullable();
-            $table->json('history'); 
-            $table->integer('price',false, true)->default(0)->nullable(false);
-            $table->string('symbol')->nullable();
+            $table->decimal('balance', 15, 2, true)->default(0);
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('crypto_currencies');
+        Schema::dropIfExists('wallets');
     }
 };

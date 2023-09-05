@@ -11,10 +11,15 @@ class CryptoCurrenciesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-       $cryptocurrencies  = CryptoCurrencies::all();
-       return response()->json($cryptocurrencies );
+
+        $cryptocurrencies = CryptoCurrencies::query();
+        if ($request->has('name')) {
+            $cryptocurrencies->where('label', 'like', '%' . $request->input('name') . '%');
+        }
+        $cryptocurrencies = $cryptocurrencies->get();
+        return response()->json($cryptocurrencies);
     }
 
     /**
@@ -30,7 +35,10 @@ class CryptoCurrenciesController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $cryptocurrencie = CryptoCurrencies::with(['history' => function ($query) {
+            $query->orderBy('created_at', 'asc');
+        }])->find($id);
+        return response()->json($cryptocurrencie);
     }
 
     /**

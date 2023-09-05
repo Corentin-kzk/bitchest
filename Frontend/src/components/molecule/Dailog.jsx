@@ -5,6 +5,7 @@ import {
   getDialogContent,
   getDialogIsOpen,
   hideDialogAction,
+  isSubmitAction,
 } from '../../reducers/dialogReducer'
 
 export function GlobalDialog() {
@@ -16,10 +17,17 @@ export function GlobalDialog() {
     dispatch(hideDialogAction())
   }
 
+  const handleSubmit = () => {
+    dispatch(isSubmitAction())
+  }
+
   return (
     <Dialog open={isOpen} onClose={handleClose}>
-      <DialogContent>{DialogForm[dialogContent]}</DialogContent>
+      <DialogContent>{DialogForm[dialogContent.formName]}</DialogContent>
       <DialogActions>
+        <Button onClick={handleSubmit} color='primary'>
+          {dialogContent.dialogProps?.submitLabel || 'Envoyer'}
+        </Button>
         <Button onClick={handleClose} color='primary'>
           Fermer
         </Button>

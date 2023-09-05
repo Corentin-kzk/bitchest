@@ -30,11 +30,7 @@ export const CryptoPage = () => {
     queryFn: () => getMyUser(),
     refetchOnWindowFocus: false,
   })
-  console.log(
-    '🚀 ~ file: CryptoPage.jsx:24 ~ CryptoPage ~ userIsFetching:',
-    userIsFetching
-  )
-  console.log('🚀 ~ file: CryptoPage.jsx:23 ~ CryptoPage ~ user:', user)
+
   const navigate = useNavigate()
   if (isError) return <Navigate to={'/500'} />
   return (
@@ -63,9 +59,14 @@ export const CryptoPage = () => {
             }}
           >
             <Box sx={{ alignSelf: 'self-start' }}>
-              <IconButton onClick={() => navigate(linkUrl.home)}>
-                <ChevronLeft />
-              </IconButton>
+              <Button
+                onClick={() => navigate(linkUrl.home)}
+                startIcon={<ChevronLeft />}
+                color='secondary'
+                variant='text'
+              >
+                dashboard
+              </Button>
             </Box>
             <img src={data.logo}></img>
             <Typography component='h1'>{data.label}</Typography>
@@ -84,7 +85,15 @@ export const CryptoPage = () => {
               variant='outlined'
               color='secondary'
               endIcon={<Sell />}
-              onClick={() => dispatch(showDialogAction('buyForm'))}
+              onClick={() =>
+                dispatch(
+                  showDialogAction({
+                    formName: 'buyForm',
+                    dialogProps: { submitLabel: 'Acheter' },
+                    formProps: { coin: { ...data }, user: { ...user } },
+                  })
+                )
+              }
             >
               Vendre
             </Button>

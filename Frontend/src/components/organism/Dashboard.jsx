@@ -22,13 +22,15 @@ import { Outlet, useNavigate, useLocation } from 'react-router'
 import { Euro, Logout } from '@mui/icons-material'
 import Image from '../atom/Image'
 import axios from '../../api/config'
-import { useSelector } from 'react-redux'
-import { selectUser } from '../../reducers/userReducer'
-import { Typography } from '@mui/material'
+import { useDispatch, useSelector } from 'react-redux'
+import { selectUser, setUser } from '../../reducers/userReducer'
+import { CircularProgress, Typography } from '@mui/material'
 import { isEqual } from 'lodash'
 import { useState } from 'react'
 import { useSession } from '../../hooks/useSession'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
+import { MyUser_QK, getMyUser, getMyWallet } from '../../api/me'
+import { useEffect } from 'react'
 
 const drawerWidth = 240
 
@@ -77,9 +79,29 @@ const Drawer = styled(MuiDrawer, {
 }))
 
 export default function Dashboard() {
-  const user = useSelector(selectUser)
+  // const user = useSelector(selectUser)
   const [open, setOpen] = useState(false)
   const { destroySession } = useSession()
+
+  const dispatch = useDispatch()
+  const { data: user, isLoading } = useQuery({
+    queryKey: [MyUser_QK],
+    queryFn: () => getMyUser(),
+  })
+
+  const myWallet = useQuery({
+    queryKey: ['kkk'],
+    queryFn: () => getMyWallet(),
+  })
+  console.log(
+    '🚀 ~ file: Dashboard.jsx:96 ~ Dashboard ~ myWallet:',
+    myWallet.data
+  )
+
+  useEffect(() => {
+    dispatch(setUser(user))
+  }, [user])
+
   const userMutation = useMutation({
     mutationFn: async () => await axios.post('/logout'),
   })
@@ -150,11 +172,13 @@ export default function Dashboard() {
               }}
             >
               <Typography>Solde :</Typography>
-              {user.wallet && (
+
+              {!isLoading && user?.wallet && (
                 <Typography>
                   {(+user.wallet.balance).toLocaleString('fr-FR')}
                 </Typography>
               )}
+              {isLoading && <CircularProgress size={15} color='primary' />}
               <IconButton color='inherit'>
                 <Euro />
               </IconButton>

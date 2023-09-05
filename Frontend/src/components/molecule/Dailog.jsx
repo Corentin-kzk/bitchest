@@ -5,12 +5,14 @@ import {
   getDialogContent,
   getDialogIsOpen,
   hideDialogAction,
+  isError,
   isSubmitAction,
 } from '../../reducers/dialogReducer'
 
 export function GlobalDialog() {
   const isOpen = useSelector(getDialogIsOpen)
   const dialogContent = useSelector(getDialogContent)
+  const isDisabled = useSelector(isError)
 
   const dispatch = useDispatch()
   const handleClose = () => {
@@ -18,14 +20,15 @@ export function GlobalDialog() {
   }
 
   const handleSubmit = () => {
-    dispatch(isSubmitAction())
+    console.log('🚀 ~ file: Dailog.jsx:28 ~ handleSubmit ~ submit')
+    dispatch(isSubmitAction(true))
   }
 
   return (
     <Dialog open={isOpen} onClose={handleClose}>
       <DialogContent>{DialogForm[dialogContent.formName]}</DialogContent>
       <DialogActions>
-        <Button onClick={handleSubmit} color='primary'>
+        <Button onClick={handleSubmit} color='primary' disabled={isDisabled}>
           {dialogContent.dialogProps?.submitLabel || 'Envoyer'}
         </Button>
         <Button onClick={handleClose} color='primary'>

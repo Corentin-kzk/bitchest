@@ -46,12 +46,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    public function History()
+    public function history()
     {
         return $this->hasMany(CryptoHistory::class);
     }
 
-    public function Wallet()
+    public function wallet()
     {
         return $this->hasOne(Wallet::class);
     }

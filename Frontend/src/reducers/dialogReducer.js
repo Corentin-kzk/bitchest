@@ -7,6 +7,7 @@ const dialogSlice = createSlice({
     dialogContent: {},
     formProps: {},
     isSubmit: false,
+    isError: false,
   },
   reducers: {
     showDialogAction: (state, action) => {
@@ -19,19 +20,31 @@ const dialogSlice = createSlice({
     },
     hideDialogAction: (state) => {
       state.showDialog = false
-      state.dialogContent = null
+      state.dialogContent = {
+        formName: '',
+        dialogProps: {},
+      }
     },
-    isSubmitAction: (state) => {
-      state.isSubmit = true
+    isSubmitAction: (state, action) => {
+      state.isSubmit = action.payload
+    },
+    isErrorAction: (state, action) => {
+      state.isError = !!action.payload
     },
   },
 })
 
-export const { showDialogAction, hideDialogAction, isSubmitAction } =
-  dialogSlice.actions
+export const {
+  showDialogAction,
+  hideDialogAction,
+  isSubmitAction,
+  isErrorAction,
+} = dialogSlice.actions
 
 export const getDialogIsOpen = (state) => state.dialog.showDialog
 export const getDialogContent = (state) => state.dialog.dialogContent
 export const getDialogProps = (state) => state.dialog.formProps
 export const isSubmited = (state) => state.dialog.isSubmit
+export const isError = (state) => state.dialog.isError
+
 export default dialogSlice.reducer

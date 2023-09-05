@@ -81,10 +81,13 @@ export const CryptoPage = () => {
               gap: '10px',
             }}
           >
+            <Button variant='outlined' color='secondary' endIcon={<Sell />}>
+              Vendre
+            </Button>
             <Button
               variant='outlined'
               color='secondary'
-              endIcon={<Sell />}
+              endIcon={<AddShoppingCart />}
               onClick={() =>
                 dispatch(
                   showDialogAction({
@@ -94,13 +97,6 @@ export const CryptoPage = () => {
                   })
                 )
               }
-            >
-              Vendre
-            </Button>
-            <Button
-              variant='outlined'
-              color='secondary'
-              endIcon={<AddShoppingCart />}
             >
               Acheter
             </Button>

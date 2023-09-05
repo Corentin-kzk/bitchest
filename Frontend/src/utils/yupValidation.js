@@ -12,4 +12,10 @@ export const validationSchema = {
       .min(6, globalError.password)
       .required(globalError.passwordRequire),
   }),
+  cryptoBuy: yup.object().shape({
+    amount: yup
+      .number()
+      .positive(globalError.negativeValue)
+      .required(globalError.requiredAmount),
+  }),
 }

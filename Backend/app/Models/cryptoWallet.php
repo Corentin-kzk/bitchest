@@ -5,15 +5,16 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Transaction extends Model
+class cryptoWallet extends Model
 {
     use HasFactory;
-    protected $fillable = ['crypto_id', 'wallet_id', 'amount', 'type', 'price'];
-    public function cryptoCurrency()
-    {
-        return $this->belongsTo(CryptoCurrency::class);
-    }
-
+    protected $fillable = [
+        'crypto_id', 'wallet_id', 'amount', 'price'
+    ];
+    protected $hiden = [
+        'updated_at',
+        'created_at'
+    ];
     public function wallet()
     {
         return $this->belongsTo(Wallet::class);

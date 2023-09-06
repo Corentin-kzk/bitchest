@@ -15,7 +15,11 @@ class Wallet extends Model
     }
     public function transaction()
     {
-        return $this->hasOne(Transaction::class, 'wallet_id');
+        return $this->hasMany(Transaction::class, 'wallet_id');
+    }
+    public function cryptoWallet()
+    {
+        return $this->hasMany(cryptoWallet::class, 'wallet_id');
     }
 
     protected $hidden = [

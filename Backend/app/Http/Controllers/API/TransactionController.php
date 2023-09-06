@@ -4,13 +4,12 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\CryptoCurrencies;
+use App\Models\cryptoWallet;
 use App\Models\Transaction;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class CryptoController extends Controller
+class TransactionController extends Controller
 {
     public function buyCrypto(Request $request)
     {
@@ -35,6 +34,25 @@ class CryptoController extends Controller
         }
 
 
+        $cryptoWallet = cryptoWallet::firstOrCreate(
+            [
+                'crypto_id' => $crypto->id,
+                'wallet_id' =>  $user->wallet->id,
+            ],
+            [
+                'crypto_id ' => $crypto->id,
+                'wallet_id' =>  $user->wallet->id,
+                'amount' => 0,
+                'balance' =>  0,
+            ]
+        );
+        if ($cryptoWallet) {
+            $cryptoWallet->amount += $request->amount;
+            $cryptoWallet->balance += $price;
+            $cryptoWallet->save();
+        }
+
+
         $transaction = new Transaction();
         $transaction->crypto_id = $crypto->id;
         $transaction->wallet_id = $user->wallet->id;
@@ -46,7 +64,7 @@ class CryptoController extends Controller
         $user->wallet->balance -= $price;
         $user->wallet->save();
 
-        return response()->json(['message' => 'Insufficient funds'], 200);
+        return response()->json(['message' => 'gg'], 200);
     }
 
     public function sellCrypto(Request $request)

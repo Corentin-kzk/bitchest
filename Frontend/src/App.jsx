@@ -28,8 +28,27 @@ const defaultTheme = createTheme({
   },
 })
 
+const queryConfig = {
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 1000 * 60,
+      cacheTime: 1000 * 60,
+      refetchOnMount: 'always',
+      refetchOnReconnect: 'always',
+      refetchOnWindowFocus: 'always',
+      refetchInterval: 1000 * 120,
+      refetchIntervalInBackground: true,
+      suspense: false,
+    },
+    mutations: {
+      retry: 2,
+    },
+  },
+}
+
 function App() {
-  const queryClient = new QueryClient()
+  const queryClient = new QueryClient(queryConfig)
   return (
     <QueryClientProvider client={queryClient}>
       <Provider store={store}>

@@ -3,10 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
 use App\Models\Wallet;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class WalletController extends Controller
 {
@@ -20,7 +17,7 @@ class WalletController extends Controller
                     $query->select('label', 'id');
                 }
             ])
-            ->get();
-        return response()->json(['wallet' => $wallet]);
+            ->first();
+        return response()->json($wallet);
     }
 }

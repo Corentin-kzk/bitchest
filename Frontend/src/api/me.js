@@ -11,4 +11,6 @@ export const getMyWallet = async () => {
   const user = await axios.get('api/me/wallet')
   return user.data
 }
-export const MyUser_QK = 'queryKey_myUsers'
+
+export const MyWallet_QK = 'queryKey_myWallet'
+export const MyUser_QK = 'queryKey_myUser'

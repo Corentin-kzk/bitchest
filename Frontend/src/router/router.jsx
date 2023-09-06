@@ -9,6 +9,7 @@ import IsConnected from '@components/middleware/MiddlewareConected'
 import { Page500 } from '@pages/Page500'
 import { CryptoPage } from '@pages/CryptoPage'
 import { Page404 } from '@pages/Page404'
+import WalletPage from '@pages/WalletPage'
 
 const router = createBrowserRouter([
   {
@@ -38,6 +39,10 @@ const router = createBrowserRouter([
           {
             path: linkUrl.cryptoId,
             element: <CryptoPage />,
+          },
+          {
+            path: linkUrl.wallet,
+            element: <WalletPage />,
           },
           {
             path: linkUrl.admin,

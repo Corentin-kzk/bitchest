@@ -16,23 +16,22 @@ import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import PeopleIcon from '@mui/icons-material/People'
-import LayersIcon from '@mui/icons-material/Layers'
 import { Outlet, useNavigate, useLocation } from 'react-router'
-import { Euro, Logout } from '@mui/icons-material'
+import { AdminPanelSettings, Euro, Logout, Settings } from '@mui/icons-material'
 import Image from '../atom/Image'
 import axios from '../../api/config'
-import { useDispatch, useSelector } from 'react-redux'
-import { selectUser, setUser } from '../../reducers/userReducer'
+import { useDispatch } from 'react-redux'
+import { setUser } from '../../reducers/userReducer'
 import { CircularProgress, Typography } from '@mui/material'
 import { isEqual } from 'lodash'
 import { useState } from 'react'
 import { useSession } from '../../hooks/useSession'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { MyUser_QK, getMyUser, getMyWallet } from '../../api/me'
+import { MyUser_QK, getMyUser } from '../../api/me'
 import { useEffect } from 'react'
+import { linkUrl } from '../../utils/linkUrl'
 
-const drawerWidth = 240
+const drawerWidth = 260
 
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
@@ -79,7 +78,6 @@ const Drawer = styled(MuiDrawer, {
 }))
 
 export default function Dashboard() {
-  // const user = useSelector(selectUser)
   const [open, setOpen] = useState(false)
   const { destroySession } = useSession()
 
@@ -88,15 +86,7 @@ export default function Dashboard() {
     queryKey: [MyUser_QK],
     queryFn: () => getMyUser(),
   })
-
-  const myWallet = useQuery({
-    queryKey: ['kkk'],
-    queryFn: () => getMyWallet(),
-  })
-  console.log(
-    '🚀 ~ file: Dashboard.jsx:96 ~ Dashboard ~ myWallet:',
-    myWallet.data
-  )
+  console.log('🚀 ~ file: Dashboard.jsx:91 ~ Dashboard ~ user:', user)
 
   useEffect(() => {
     dispatch(setUser(user))
@@ -204,40 +194,44 @@ export default function Dashboard() {
           </Toolbar>
           <Divider />
           <List component='nav'>
-            {isEqual(user?.role, 'admin') && (
-              <ListItemButton
-                component='a'
-                href='/dashboard/admin/users'
-                selected={location.pathname === '/dashboard/admin/users'}
-              >
-                <ListItemIcon>
-                  <PeopleIcon />
-                </ListItemIcon>
-                <ListItemText primary='Customers' />
-              </ListItemButton>
-            )}
             <ListItemButton
               component='a'
-              href='/dashboard'
-              selected={location.pathname === '/dashboard'}
+              href={linkUrl.home}
+              selected={location.pathname === linkUrl.home}
             >
               <ListItemIcon>
                 <DashboardIcon />
               </ListItemIcon>
-              <ListItemText primary='Dashboard' />
+              <ListItemText primary='Liste des cryptomonaies' />
             </ListItemButton>
-            <ListItemButton>
+            <ListItemButton
+              component='a'
+              href={linkUrl.wallet}
+              selected={location.pathname === linkUrl.wallet}
+            >
               <ListItemIcon>
                 <ShoppingCartIcon />
               </ListItemIcon>
-              <ListItemText primary='Orders' />
+              <ListItemText primary='Portefeuille' />
             </ListItemButton>
             <ListItemButton>
               <ListItemIcon>
-                <LayersIcon />
+                <Settings />
               </ListItemIcon>
-              <ListItemText primary='Wallet' />
+              <ListItemText primary='Paramètre' />
             </ListItemButton>
+            {isEqual(user?.role, 'admin') && (
+              <ListItemButton
+                component='a'
+                href={linkUrl.users}
+                selected={location.pathname === linkUrl.users}
+              >
+                <ListItemIcon>
+                  <AdminPanelSettings />
+                </ListItemIcon>
+                <ListItemText primary="Panneau d'administration" />
+              </ListItemButton>
+            )}
           </List>
         </Drawer>
         <Box

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\CryptoCurrencies;
+use App\Models\CryptoCurrency;
 use App\Models\cryptoWallet;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
@@ -22,7 +22,7 @@ class TransactionController extends Controller
             return response()->json(['errors' => $validator->errors()], 400);
         }
         $user = auth()->user();
-        $crypto = CryptoCurrencies::find($request->id);
+        $crypto = CryptoCurrency::find($request->id);
 
         if (!$crypto) {
             return response()->json(['message' => 'Crypto not found'], 404);

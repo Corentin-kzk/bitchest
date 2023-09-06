@@ -13,7 +13,7 @@ class CryptoHistory extends Model
         'updated_at',
         'crypto_currency_id'
     ];
-    public function crypto_currency()
+    public function cryptoCrency()
     {
         return $this->belongsTo(CryptoCurrency::class, 'crypto_currency_id');
     }

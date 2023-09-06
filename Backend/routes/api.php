@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\API\CryptoCurrenciesController;
+use App\Http\Controllers\API\CryptoCurrencyController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\Api\WalletController;
@@ -26,7 +26,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::middleware(['isAdmin'])->group(function () {
         Route::apiResource('users', UserController::class);
     });
-    Route::apiResource('cryptos', CryptoCurrenciesController::class);
+    Route::apiResource('cryptos', CryptoCurrencyController::class);
     Route::post('cryptos/buy_crypto', [TransactionController::class, 'buyCrypto'])->name('api.buy-crypto');
     Route::post('cryptos/sell_crypto', [TransactionController::class, 'sellCrypto'])->name('api.sell-crypto');
     Route::get('/me/wallet', [WalletController::class, 'index'])->name('api.mywallet');

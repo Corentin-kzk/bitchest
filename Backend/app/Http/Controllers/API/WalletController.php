@@ -12,7 +12,15 @@ class WalletController extends Controller
 {
     public function index()
     {
-        $wallet = Wallet::where('user_id', auth()->user()->id)->with('cryptoWallet.')->get();
+        $wallet = Wallet::where('user_id', auth()->user()->id)
+            ->with([
+                'cryptoWallet.cryptoCurrency' => function ($query) {
+                    $query->select('label', 'id');
+                }, 'transaction.cryptoCurrency' => function ($query) {
+                    $query->select('label', 'id');
+                }
+            ])
+            ->get();
         return response()->json(['wallet' => $wallet]);
     }
 }

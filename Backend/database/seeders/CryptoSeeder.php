@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\CryptoCurrencies;
+use App\Models\CryptoCurrency;
 use App\Models\CryptoHistory;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -32,7 +32,7 @@ class CryptoSeeder extends Seeder
             $slugifiedCryptoName = Str::slug($name, '-');
             $imageName = $slugifiedCryptoName . '.png';
 
-            CryptoCurrencies::updateOrInsert(
+            CryptoCurrency::updateOrInsert(
                 ['label' => $name],
                 [
                     'label' => $name,
@@ -42,7 +42,7 @@ class CryptoSeeder extends Seeder
                 ]
             );
 
-            $crypto = CryptoCurrencies::where('label', $name)->first();
+            $crypto = CryptoCurrency::where('label', $name)->first();
             $currentPrice = 0;
             for ($day = 1; $day <= 30; $day++) {
                 if ($day === 1) {

@@ -16,6 +16,7 @@ import { validationSchema } from '../../../utils/yupValidation'
 import { buyCrypto } from '../../../api/crypto'
 import { showAlertAction } from '../../../reducers/alertReducer'
 import { MyUser_QK } from '../../../api/me'
+import { floor, toNumber } from 'lodash'
 
 const BuyForm = () => {
   const props = useSelector(getDialogProps)
@@ -51,10 +52,9 @@ const BuyForm = () => {
   const dispatch = useDispatch()
   const formik = useFormik({
     validationSchema: validationSchema.cryptoBuy,
-    initialValues: { amount: '0' },
+    initialValues: { amount: '' },
     onSubmit: (values) => {
       mutation.mutateAsync({ amount: values.amount, id: props.coin.id })
-      console.log('🚀 ~ file: BuyForm.jsx:17 ~ BuyForm ~ values:', values)
     },
     validate: (values) => {
       const balanceAfterPurchase =
@@ -72,10 +72,8 @@ const BuyForm = () => {
   const { handleSubmit, values, setFieldValue, errors, isSubmitting } = formik
 
   const handleMaxCrypto = () => {
-    setFieldValue(
-      'amount',
-      (props.user.wallet.balance / props.coin.price).toFixed(4)
-    )
+    const cryptoAmount = props.user.wallet.balance / props.coin.price
+    setFieldValue('amount', floor(cryptoAmount, 2))
   }
 
   useEffect(() => {
@@ -111,7 +109,7 @@ const BuyForm = () => {
         <Typography>
           Votre solde :{' '}
           {(
-            +props.user.wallet.balance -
+            toNumber(props.user.wallet.balance) -
             values.amount * props.coin.price
           ).toLocaleString()}
         </Typography>

@@ -11,11 +11,11 @@ class Transaction extends Model
     protected $fillable = ['crypto_id', 'wallet_id', 'amount', 'type', 'price'];
     public function cryptoCurrency()
     {
-        return $this->belongsTo(CryptoCurrency::class);
+        return $this->belongsTo(CryptoCurrency::class, 'crypto_id');
     }
 
     public function wallet()
     {
-        return $this->belongsTo(Wallet::class);
+        return $this->belongsTo(Wallet::class, 'wallet_id');
     }
 }

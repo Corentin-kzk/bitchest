@@ -13,7 +13,7 @@ import { Euro, Percent } from '@mui/icons-material'
 import { useEffect } from 'react'
 import { ApiError, globalError } from '../../../utils/globalErrors'
 import { validationSchema } from '../../../utils/yupValidation'
-import { buyCrypto } from '../../../api/crypto'
+import { sellCrypto } from '../../../api/crypto'
 import { showAlertAction } from '../../../reducers/alertReducer'
 import { MyUser_QK } from '../../../api/me'
 import { floor, toNumber } from 'lodash'
@@ -23,11 +23,8 @@ const SellForm = () => {
   const props = useSelector(getDialogProps)
   const isSubmit = useSelector(isSubmited)
   const queryClient = useQueryClient()
-  console.log('🚀 ~ file: BuyForm.jsx:22 ~ BuyForm ~ isSubmit:', isSubmit)
-  console.log('🚀 ~ file: sellForm.jsx:23 ~ SellForm ~ props:', props.user)
-  console.log('🚀 ~ file: sellForm.jsx:23 ~ SellForm ~ props:', props.wallet)
 
-  const mutation = useMutation(buyCrypto, {
+  const mutation = useMutation(sellCrypto, {
     onSuccess: () => {
       dispatch(
         showAlertAction({
@@ -55,7 +52,7 @@ const SellForm = () => {
   const dispatch = useDispatch()
   const formik = useFormik({
     validationSchema: validationSchema.cryptoBuy,
-    initialValues: { amount: props.wallet.amount || '' },
+    initialValues: { amount: '' },
     onSubmit: (values) => {
       mutation.mutateAsync({ amount: values.amount, id: props.coin.id })
     },
@@ -74,14 +71,8 @@ const SellForm = () => {
   const { handleSubmit, values, setFieldValue, errors, isSubmitting } = formik
 
   const getDiffInPercent = (num1, num2) => {
-    console.log(
-      '🚀 ~ file: sellForm.jsx:76 ~ getDiffInPercent ~ num1, num2:',
-      num1,
-      num2
-    )
-
-    const difference = Math.abs(+num1 - +num2)
-    const pourcentageDifference = (difference / Math.max(num1, num2)) * 100
+    if (num1 === 0 || num2 === 0 || isNaN(num1) || isNaN(num2)) return 0
+    const pourcentageDifference = (num2 / 100 / num1) * 100
     return pourcentageDifference
   }
 
@@ -133,8 +124,8 @@ const SellForm = () => {
         <Typography>
           Gain potentiel :
           {getDiffInPercent(
-            props.wallet.balance,
-            values.amount * props.coin.price
+            props.wallet.balance / props.wallet.amount,
+            (values.amount / values.amount) * props.coin.price
           )}
         </Typography>
         <Percent fontSize='6' />

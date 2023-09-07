@@ -12,10 +12,6 @@ function PieChart({ series, labels, getSelectedValue }) {
         events: {
           dataPointSelection: (event, chartContext, config) => {
             const selectedDataPoint = config.dataPointIndex
-            console.log(
-              '🚀 ~ file: PieChart.jsx:15 ~ PieChart ~ selectedDataPoint:',
-              selectedDataPoint
-            )
             getSelectedValue(labels[selectedDataPoint])
           },
         },

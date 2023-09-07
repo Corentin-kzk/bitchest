@@ -12,6 +12,8 @@ export default defineConfig({
       '@components': '/src/components',
       '@pages': '/src/pages',
       '@utils': '/src/utils',
+      '@api': '/src/api',
+      '@reducers': 'src/reducers',
     },
   },
 })

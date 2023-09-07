@@ -7,6 +7,11 @@ export const getMyUser = async () => {
   return user.data
 }
 
+export const updateMe = async () => {
+  const user = await axios.patch('api/me')
+  return user.data
+}
+
 export const getMyWallet = async () => {
   const user = await axios.get('api/me/wallet')
   return user.data

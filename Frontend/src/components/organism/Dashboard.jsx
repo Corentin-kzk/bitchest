@@ -17,19 +17,26 @@ import ListItemText from '@mui/material/ListItemText'
 import DashboardIcon from '@mui/icons-material/Dashboard'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { Outlet, useNavigate, useLocation } from 'react-router'
-import { AdminPanelSettings, Euro, Logout, Settings } from '@mui/icons-material'
+import {
+  AccountCircle,
+  AdminPanelSettings,
+  Euro,
+  Logout,
+  Settings,
+} from '@mui/icons-material'
 import Image from '../atom/Image'
-import axios from '../../api/config'
+import axios from '@api/config'
 import { useDispatch } from 'react-redux'
 import { setUser } from '../../reducers/userReducer'
-import { CircularProgress, Typography } from '@mui/material'
+import { CircularProgress, Tooltip, Typography } from '@mui/material'
 import { isEqual } from 'lodash'
 import { useState } from 'react'
 import { useSession } from '../../hooks/useSession'
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { MyUser_QK, getMyUser } from '../../api/me'
+import { MyUser_QK, getMyUser } from '@api/me'
 import { useEffect } from 'react'
 import { linkUrl } from '../../utils/linkUrl'
+import { showDialogAction } from '../../reducers/dialogReducer'
 
 const drawerWidth = 260
 
@@ -86,7 +93,6 @@ export default function Dashboard() {
     queryKey: [MyUser_QK],
     queryFn: () => getMyUser(),
   })
-  console.log('🚀 ~ file: Dashboard.jsx:91 ~ Dashboard ~ user:', user)
 
   useEffect(() => {
     dispatch(setUser(user))
@@ -151,6 +157,7 @@ export default function Dashboard() {
                 </Typography>
               )}
             </Box>
+
             <Box
               sx={{
                 display: 'flex',
@@ -161,22 +168,51 @@ export default function Dashboard() {
                 gap: '10px',
               }}
             >
-              <Typography>Solde :</Typography>
-
-              {!isLoading && user?.wallet && (
-                <Typography>
-                  {(+user.wallet.balance).toLocaleString('fr-FR')}
-                </Typography>
-              )}
-              {isLoading && <CircularProgress size={15} color='primary' />}
-              <IconButton color='inherit'>
-                <Euro />
-              </IconButton>
+              <Box
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignContent: 'center',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '3px',
+                }}
+              >
+                <Typography fontSize={10}>Solde :</Typography>
+                {!isLoading && user?.wallet && (
+                  <Typography
+                    color={+user.wallet.balance < 20 ? 'error' : 'primary'}
+                  >
+                    {(+user.wallet.balance).toLocaleString('fr-FR')}
+                  </Typography>
+                )}
+                {isLoading && <CircularProgress size={15} color='primary' />}
+                <Euro fontSize='' />
+              </Box>
+              <Tooltip title='Mon compte'>
+                <IconButton
+                  color='inherit'
+                  onClick={() =>
+                    dispatch(
+                      showDialogAction({
+                        formName: 'userMeForm',
+                        dialogProps: {
+                          submitLabel: 'Modifier',
+                        },
+                      })
+                    )
+                  }
+                >
+                  <AccountCircle />
+                </IconButton>
+              </Tooltip>
             </Box>
 
-            <IconButton color='inherit' onClick={handleLogOut}>
-              <Logout />
-            </IconButton>
+            <Tooltip title='Se déconncter'>
+              <IconButton color='inherit' onClick={handleLogOut}>
+                <Logout />
+              </IconButton>
+            </Tooltip>
           </Toolbar>
         </AppBar>
         <Drawer variant='permanent' open={open}>
@@ -214,7 +250,18 @@ export default function Dashboard() {
               </ListItemIcon>
               <ListItemText primary='Portefeuille' />
             </ListItemButton>
-            <ListItemButton>
+            <ListItemButton
+              onClick={() =>
+                dispatch(
+                  showDialogAction({
+                    formName: 'userMeForm',
+                    dialogProps: {
+                      submitLabel: 'Modifier',
+                    },
+                  })
+                )
+              }
+            >
               <ListItemIcon>
                 <Settings />
               </ListItemIcon>

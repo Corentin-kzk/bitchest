@@ -18,8 +18,8 @@ class UserController extends Controller
         if ($request->has('name')) {
             $query->where('name', 'like', '%' . $request->input('name') . '%');
         }
-        if ($request->has('id')) {
-            $query->where('id', $request->input('id'));
+        if ($request->has('email')) {
+            $query->where('email', 'like', '%' . $request->input('email') . '%');
         }
         $perPage = $request->input('per_page', 10);
         $page = $request->input('page', 1);
@@ -48,7 +48,7 @@ class UserController extends Controller
 
         $user->wallet()->save($wallet);
 
-        return response()->json($user, 201);
+        return response()->json(['message' => 'User created'], 200);
     }
 
     public function show($id)
@@ -72,7 +72,7 @@ class UserController extends Controller
         $user->role = $request->input('role');
         $user->save();
 
-        return response()->json($user);
+        return response()->json(['message' => 'User updated']);
     }
 
     public function destroy($id)

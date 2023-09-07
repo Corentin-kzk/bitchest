@@ -34,8 +34,8 @@ import TableContainer from '@mui/material/TableContainer'
 import TableHead from '@mui/material/TableHead'
 import TablePagination from '@mui/material/TablePagination'
 import TableRow from '@mui/material/TableRow'
-import DialogForm from '@components/molecule/DialogForm'
-import DialogDelete from '@components/molecule/DialogDelete'
+import { useDispatch } from 'react-redux'
+import { showDialogAction } from '../reducers/dialogReducer'
 
 const columns = [
   { id: 'id', label: <Tag />, align: 'center', minWidth: 60 },
@@ -85,9 +85,6 @@ function UsersPage() {
   const [page, setPage] = useState(1)
   const [rowOnPage, setRowOnPage] = useState(10)
   const [filter, setFilter] = useState('name')
-  const [openEditId, setOpenEditId] = useState(null)
-  const [isAddingUser, setIsAddingUser] = useState(false)
-  const [isDeleting, setIsDeleting] = useState(false)
 
   const { data, isFetching, isError } = useQuery({
     queryKey: [User_QK, searchValue, rowOnPage, page],
@@ -95,6 +92,7 @@ function UsersPage() {
     refetchOnWindowFocus: false,
   })
 
+  const dispatch = useDispatch()
   useEffect(() => {
     if (!isFetching && !isError && !!data) {
       setPage(data.current_page)
@@ -110,15 +108,6 @@ function UsersPage() {
   }
   const handleSearch = (event) => {
     setSearchValue(event.target.value)
-  }
-  const handleCloseEdit = () => {
-    setOpenEditId(null)
-  }
-  const handleCloseCreate = () => {
-    setIsAddingUser(false)
-  }
-  const handleCloseDeleting = () => {
-    setIsDeleting(false)
   }
 
   return (
@@ -161,14 +150,22 @@ function UsersPage() {
                 onChange={(event) => setFilter(event.target.value)}
               >
                 <MenuItem value={'name'}>Nom</MenuItem>
-                <MenuItem value={'id'}>Id</MenuItem>
+                <MenuItem value={'email'}>Email</MenuItem>
               </Select>
             </FormControl>
           </Box>
           <Button
             variant='outlined'
             color='secondary'
-            onClick={() => setIsAddingUser(true)}
+            onClick={() =>
+              dispatch(
+                showDialogAction({
+                  formName: 'userForm',
+                  dialogProps: { submitLabel: 'Ajouter un utilisateur' },
+                  formProps: { id: null, isEdit: false },
+                })
+              )
+            }
           >
             Ajouter un utilisateur{' '}
           </Button>
@@ -230,13 +227,34 @@ function UsersPage() {
                                 <>
                                   <Button
                                     color='secondary'
-                                    onClick={() => setOpenEditId(row.id)}
+                                    onClick={() =>
+                                      dispatch(
+                                        showDialogAction({
+                                          formName: 'userForm',
+                                          dialogProps: {
+                                            submitLabel: 'Modifier',
+                                          },
+                                        })
+                                      )
+                                    }
                                   >
                                     <Edit />
                                   </Button>
                                   <Button
                                     color='error'
-                                    onClick={() => setIsDeleting(row.id)}
+                                    onClick={() =>
+                                      dispatch(
+                                        showDialogAction({
+                                          formName: 'deleteForm',
+                                          dialogProps: {
+                                            submitLabel: 'Supprimer',
+                                          },
+                                          formProps: {
+                                            id: row.id,
+                                          },
+                                        })
+                                      )
+                                    }
                                   >
                                     <Delete />
                                   </Button>
@@ -268,9 +286,6 @@ function UsersPage() {
           onRowsPerPageChange={handleChangeRows}
         />
       </Paper>
-      <DialogForm id={openEditId} isEdit handleClose={handleCloseEdit} />
-      <DialogForm id={isAddingUser} handleClose={handleCloseCreate} />
-      <DialogDelete id={isDeleting} handleClose={handleCloseDeleting} />
     </>
   )
 }

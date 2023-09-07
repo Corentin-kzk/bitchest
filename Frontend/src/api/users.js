@@ -5,7 +5,7 @@ export const getUsers = async (page, rowOnPage, searchValue, filter) => {
   const querySearch = searchValue
     ? filter === 'name'
       ? { name: searchValue }
-      : { id: searchValue }
+      : { email: searchValue }
     : {}
   const query = qs.stringify({
     per_page: rowOnPage,

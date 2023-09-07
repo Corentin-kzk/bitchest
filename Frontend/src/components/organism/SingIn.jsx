@@ -9,11 +9,11 @@ import Image from '../atom/Image'
 import { useFormik } from 'formik'
 import { IconButton, InputAdornment } from '@mui/material'
 import { Visibility, VisibilityOff } from '@mui/icons-material'
-import axios from '../../api/config'
+import axios from '@api/config'
 import { setUser } from '../../reducers/userReducer'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router'
-import { csrf } from '../../api/crsf'
+import { csrf } from '@api/crsf'
 import { globalError } from '../../utils/globalErrors'
 import { red } from '@mui/material/colors'
 import { useSession } from '../../hooks/useSession'
@@ -21,8 +21,8 @@ import { useMutation } from '@tanstack/react-query'
 
 export default function SignIn() {
   const [showPassword, setShowPassword] = useState(false)
-  const handleClickShowPassword = () => setShowPassword(!showPassword)
-  const handleMouseDownPassword = () => setShowPassword(!showPassword)
+  const handleShowPassword = () => setShowPassword(!showPassword)
+
   const loginMutation = useMutation({
     mutationFn: async (values) => await axios.post('/login', values),
   })
@@ -118,8 +118,8 @@ export default function SignIn() {
                 <InputAdornment position='end'>
                   <IconButton
                     aria-label='toggle password visibility'
-                    onClick={handleClickShowPassword}
-                    onMouseDown={handleMouseDownPassword}
+                    onClick={handleShowPassword}
+                    onMouseDown={handleShowPassword}
                   >
                     {showPassword ? <Visibility /> : <VisibilityOff />}
                   </IconButton>

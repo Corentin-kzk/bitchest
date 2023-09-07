@@ -13,9 +13,9 @@ import { Euro } from '@mui/icons-material'
 import { useEffect } from 'react'
 import { ApiError, globalError } from '../../../utils/globalErrors'
 import { validationSchema } from '../../../utils/yupValidation'
-import { buyCrypto } from '../../../api/crypto'
+import { buyCrypto } from '@api/crypto'
 import { showAlertAction } from '../../../reducers/alertReducer'
-import { MyUser_QK } from '../../../api/me'
+import { MyUser_QK } from '@api/me'
 import { floor, toNumber } from 'lodash'
 
 const BuyForm = () => {

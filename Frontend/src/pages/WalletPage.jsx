@@ -31,29 +31,29 @@ function WalletPage() {
   const [historyRenderType, setHistoryRenderType] = useState('all')
   const [page, setPage] = useState(0)
   const [rowsPerPage, setRowsPerPage] = useState(8)
+  const [cryptoHistories, setCryptoHistories] = useState([])
   const handleChangePage = (event, newPage) => {
     setPage(newPage)
   }
-
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10))
     setPage(0)
   }
+  const handleCryptoHistory = (cryptoLabel) => {
+    if (historyRenderType === 'selectedChart') {
+      const histories = data?.transaction.filter(
+        (cryptoTrasction) =>
+          cryptoTrasction.crypto_currency?.label === cryptoLabel
+      )
+      setCryptoHistories(histories)
+    }
+  }
 
-  const [cryptoHistories, setCryptoHistories] = useState([])
   const { data, isFetching } = useQuery({
     queryKey: [MyWallet_QK],
     queryFn: () => getMyWallet(),
     refetchOnWindowFocus: false,
   })
-
-  const handleCryptoHistory = (cryptoLabel) => {
-    const histories = data?.transaction.filter(
-      (cryptoTrasction) =>
-        cryptoTrasction.crypto_currency?.label === cryptoLabel
-    )
-    setCryptoHistories(histories)
-  }
 
   useEffect(() => {
     if (historyRenderType === 'all' && data?.transaction) {

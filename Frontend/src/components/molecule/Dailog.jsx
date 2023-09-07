@@ -15,17 +15,18 @@ export function GlobalDialog() {
   const isDisabled = useSelector(isError)
 
   const dispatch = useDispatch()
-  const handleClose = () => {
-    dispatch(hideDialogAction())
+  const handleClose = (_, reason) => {
+    if (!reason) {
+      dispatch(hideDialogAction())
+    }
   }
 
   const handleSubmit = () => {
-    console.log('🚀 ~ file: Dailog.jsx:28 ~ handleSubmit ~ submit')
     dispatch(isSubmitAction(true))
   }
 
   return (
-    <Dialog open={isOpen} onClose={handleClose}>
+    <Dialog open={isOpen} onClose={handleClose} disableEscapeKeyDown>
       <DialogContent>{DialogForm[dialogContent.formName]}</DialogContent>
       <DialogActions>
         <Button onClick={handleSubmit} color='primary' disabled={isDisabled}>

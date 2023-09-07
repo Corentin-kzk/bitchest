@@ -13,16 +13,16 @@ import { Euro, Percent } from '@mui/icons-material'
 import { useEffect } from 'react'
 import { ApiError, globalError } from '../../../utils/globalErrors'
 import { validationSchema } from '../../../utils/yupValidation'
-import { sellCrypto } from '../../../api/crypto'
+import { sellCrypto } from '@api/crypto'
 import { showAlertAction } from '../../../reducers/alertReducer'
-import { MyUser_QK } from '../../../api/me'
+import { MyUser_QK } from '@api/me'
 import { floor, toNumber } from 'lodash'
 
 const SellForm = () => {
-  //TODO :refaire la logique de vnete cote front
   const props = useSelector(getDialogProps)
   const isSubmit = useSelector(isSubmited)
   const queryClient = useQueryClient()
+  const dispatch = useDispatch()
 
   const mutation = useMutation(sellCrypto, {
     onSuccess: () => {
@@ -49,7 +49,7 @@ const SellForm = () => {
       dispatch(hideDialogAction())
     },
   })
-  const dispatch = useDispatch()
+
   const formik = useFormik({
     validationSchema: validationSchema.cryptoBuy,
     initialValues: { amount: '' },

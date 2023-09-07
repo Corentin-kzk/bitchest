@@ -23,9 +23,6 @@ export function Chart({ series }) {
       toolbar: {
         show: true,
       },
-      zoom: {
-        enabled: true,
-      },
     },
     title: {
       text: '',

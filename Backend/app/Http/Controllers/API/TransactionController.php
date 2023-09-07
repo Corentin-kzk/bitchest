@@ -64,7 +64,7 @@ class TransactionController extends Controller
         $user->wallet->balance -= $price;
         $user->wallet->save();
 
-        return response()->json(['message' => 'gg'], 200);
+        return response()->json(['message' => 'Crypto buy successful'], 200);
     }
 
     public function sellCrypto(Request $request)
@@ -84,19 +84,15 @@ class TransactionController extends Controller
         }
 
         $price = $request->amount * $crypto->price;
-
         $cryptoWallet = cryptoWallet::where('crypto_id', $crypto->id)->where('wallet_id', $user->wallet->id)->first();
-
         if (!$cryptoWallet)
             return response()->json(['message' => 'Cannot sell crypto u dont have !!!']);
         if ($cryptoWallet->amount - $request->amount < 0) {
             return response()->json(['message' => 'Insufficient funds'], 400);
         }
-
         $cryptoWallet->amount -= $request->amount;
         $cryptoWallet->balance -= $price;
         $cryptoWallet->save();
-
 
         $transaction = new Transaction();
         $transaction->crypto_id = $crypto->id;
@@ -108,11 +104,6 @@ class TransactionController extends Controller
 
         $user->wallet->balance += $price;
         $user->wallet->save();
-
-        // Logique de vente de crypto-monnaie ici
-
-        // Enregistrez la transaction dans la base de données
-        // ...
 
         return response()->json(['message' => 'Crypto sale successful']);
     }

@@ -7,8 +7,20 @@ export const getMyUser = async () => {
   return user.data
 }
 
-export const updateMe = async () => {
-  const user = await axios.patch('api/me')
+export const updateMe = async ({
+  name,
+  email,
+  balance,
+  password,
+  confirmPassword,
+}) => {
+  const user = await axios.patch('api/me', {
+    name,
+    email,
+    balance,
+    password,
+    confirmPassword,
+  })
   return user.data
 }
 

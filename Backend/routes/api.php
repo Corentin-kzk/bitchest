@@ -23,6 +23,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/me', function (Request $request) {
         return User::with('wallet')->find($request->user()->id);
     });
+    Route::patch('/me', [UserController::class, 'editMyUser'])->name('api.editMe');
     Route::middleware(['isAdmin'])->group(function () {
         Route::apiResource('users', UserController::class);
     });

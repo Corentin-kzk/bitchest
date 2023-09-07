@@ -55,6 +55,8 @@ export default function UserMeForm() {
     queryKey: [MyUser_QK],
     queryFn: () => getMyUser(),
     refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
   })
 
   const queryClient = useQueryClient()
@@ -81,6 +83,15 @@ export default function UserMeForm() {
     validationSchema: validationSchema.userMeEdit,
     onSubmit: async (values) => {
       const { name, email, balance, password, confirmPassword } = values
+      console.log(
+        '🚀 ~ file: UserMeForm.jsx:84 ~ onSubmit: ~  name, email, balance, password, confirmPassword :',
+        name,
+        email,
+        balance,
+        password,
+        confirmPassword
+      )
+
       await userMutation.mutateAsync(
         {
           name,
@@ -90,25 +101,20 @@ export default function UserMeForm() {
           confirmPassword,
         },
         {
-          onSuccess: (value) => {
+          onSuccess: () => {
             dispatch(
               showAlertAction({
                 status: 'success',
-                message:
-                  value.data.message ||
-                  `Bravo ! L'utilisateur a été modifier avec succés.`,
+                message: `Bravo ! L'utilisateur a été modifier avec succés.`,
               })
             )
             queryClient.invalidateQueries({ queryKey: [MyUser_QK] })
           },
-          onError: (error) => {
+          onError: () => {
             dispatch(
               showAlertAction({
                 status: 'error',
-                message:
-                  error.code === 404
-                    ? ApiError.pleaseTryLater
-                    : error.response?.data?.message,
+                message: ApiError.pleaseTryLater,
               })
             )
           },
@@ -123,7 +129,7 @@ export default function UserMeForm() {
     enableReinitialize: true,
   })
 
-  const { handleSubmit, isSubmitting, errors } = formik
+  const { handleSubmit, isSubmitting, errors, values } = formik
 
   useEffect(() => {
     isSubmit && handleSubmit()
@@ -344,7 +350,9 @@ export default function UserMeForm() {
 
                       <TableCell align='center'>
                         <Typography variant='h6'>
-                          {(+data.wallet.balance).toLocaleString('fr-FR')}
+                          {(
+                            +data.wallet.balance + +values.balance
+                          ).toLocaleString('fr-FR')}
                         </Typography>
                       </TableCell>
                     </TableRow>

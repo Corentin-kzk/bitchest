@@ -126,7 +126,7 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Wallet not found'], 404);
 
         $oldPriceByCrypto = $transaction->price / $transaction->amount;
-        $profit = $oldPriceByCrypto - $crypto->price;
+        $profit =   $crypto->price - $oldPriceByCrypto;
 
         $price = floatval($transaction->amount) * floatval($crypto->price);
 

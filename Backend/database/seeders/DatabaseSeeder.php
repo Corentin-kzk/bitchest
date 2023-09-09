@@ -22,6 +22,6 @@ class DatabaseSeeder extends Seeder
             'role' => 'admin',
         ]);
 
-        $this->call([CryptoSeeder::class]);
+        $this->call([CryptoSeeder::class, TransactionSeeder::class]);
     }
 }

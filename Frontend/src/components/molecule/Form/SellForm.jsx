@@ -165,12 +165,15 @@ const SellForm = () => {
                 variant='h6'
                 sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
                 color={
-                  values.price / values.amount - coin.price > -1
+                  coin.price - values.price / values.amount > -1
                     ? 'primary'
                     : 'error'
                 }
               >
-                {values.price / values.amount - coin.price || 0}
+                {(
+                  (coin.price - values.price / values.amount) *
+                  values.amount
+                ).toFixed(2) || 0}
                 <Euro fontSize='6px' />
               </Typography>
             </TableCell>
@@ -185,7 +188,7 @@ const SellForm = () => {
           value={selectedId}
           label='Montant de cryptomonaie'
           onChange={(e) => handleSelectedvalue(e.target.value)}
-          disabled={transactions?.data.length >= 0}
+          disabled={transactions?.data.length <= 0}
         >
           {transactions?.data
             ?.filter((transaction) => {

@@ -1,4 +1,13 @@
-import { Box, Button, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { useFormik } from 'formik'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -9,7 +18,13 @@ import {
   isSubmited,
 } from '../../../reducers/dialogReducer'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { Euro } from '@mui/icons-material'
+import {
+  CurrencyExchange,
+  Euro,
+  QueryStats,
+  Savings,
+  Wallet,
+} from '@mui/icons-material'
 import { useEffect } from 'react'
 import { ApiError, globalError } from '../../../utils/globalErrors'
 import { validationSchema } from '../../../utils/yupValidation'
@@ -24,6 +39,7 @@ const BuyForm = () => {
   const isSubmit = useSelector(isSubmited)
   const queryClient = useQueryClient()
 
+  const { user, coin } = props
   const mutation = useMutation(buyCrypto, {
     onSuccess: () => {
       dispatch(
@@ -55,11 +71,11 @@ const BuyForm = () => {
     validationSchema: validationSchema.cryptoBuy,
     initialValues: { amount: '' },
     onSubmit: (values) => {
-      mutation.mutateAsync({ amount: values.amount, id: props.coin.id })
+      mutation.mutateAsync({ amount: values.amount, id: coin.id })
     },
     validate: (values) => {
       const balanceAfterPurchase =
-        props.user.wallet.balance - values.amount * props.coin.price
+        user.wallet.balance - values.amount * coin.price
 
       if (balanceAfterPurchase < 0) {
         return { amount: globalError.negativeBalance }
@@ -73,7 +89,7 @@ const BuyForm = () => {
   const { handleSubmit, values, setFieldValue, errors, isSubmitting } = formik
 
   const handleMaxCrypto = () => {
-    const cryptoAmount = props.user.wallet.balance / props.coin.price
+    const cryptoAmount = user.wallet.balance / coin.price
     setFieldValue('amount', floor(cryptoAmount, 2))
   }
 
@@ -98,28 +114,79 @@ const BuyForm = () => {
       autoComplete='off'
     >
       <Typography component='h1' variant='h4'>
-        Acheter du {props.coin.label}
+        Acheter du {coin.label}
       </Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-        <Typography>
-          Cour du {props.coin.label} : {props.coin.price}
-        </Typography>
-        <Euro fontSize='6' />
-      </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-        <Typography>
-          Votre solde :{' '}
-          {(
-            toNumber(props.user.wallet.balance) -
-            values.amount * props.coin.price
-          ).toLocaleString()}
-        </Typography>
-        <Euro fontSize='6' />
-      </Box>
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>
+              <Typography variant='h6'>
+                <QueryStats />
+              </Typography>
+            </TableCell>
+            <TableCell
+              sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <Typography variant='h6'>{coin.price}</Typography>
+              <Euro fontSize='6px' />
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography variant='h6'>
+                <Wallet />
+              </Typography>
+            </TableCell>
+            <TableCell
+              sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <Typography variant='h6'>
+                {toNumber(user.wallet.balance).toLocaleString()}
+              </Typography>
+              <Euro fontSize='6px' />
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography variant='h6'>
+                <Savings />
+              </Typography>
+            </TableCell>
+            <TableCell
+              sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <Typography variant='h6'>
+                {' '}
+                {(
+                  toNumber(user.wallet.balance) -
+                  values.amount * coin.price
+                ).toLocaleString()}
+              </Typography>
+              <Euro fontSize='6px' />
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography variant='h6'>
+                <CurrencyExchange />
+              </Typography>
+            </TableCell>
+            <TableCell
+              sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <Typography variant='h6'>
+                {toNumber(values.amount * coin.price).toLocaleString()}
+              </Typography>
+              <Euro fontSize='6px' />
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+
       <TextField
         id='amount'
         name='amount'
-        label='montant'
+        label={`montant de ${coin.label}`}
         variant='standard'
         type='number'
         value={values.amount}
@@ -131,16 +198,6 @@ const BuyForm = () => {
           endAdornment: <Button onClick={handleMaxCrypto}>Max</Button>,
         }}
       />
-
-      <Typography>
-        Quantité de {props.coin.label} : {values.amount}
-      </Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-        <Typography>
-          Prix en euro : {values.amount * props.coin.price}
-        </Typography>
-        <Euro fontSize='6' />
-      </Box>
     </Box>
   )
 }

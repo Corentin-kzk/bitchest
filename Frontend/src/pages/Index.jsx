@@ -48,7 +48,11 @@ const columns = [
 
 const IndexPage = () => {
   const [searchValue, setSearchValue] = useState('')
-  const { data, isFetching, isError } = useQuery({
+  const {
+    data: cryptoCurrencies,
+    isFetching,
+    isError,
+  } = useQuery({
     queryKey: [Crypto_QK, searchValue],
     queryFn: () => getCryptos(searchValue),
     refetchOnWindowFocus: false,
@@ -86,7 +90,7 @@ const IndexPage = () => {
           </FormControl>
         </Box>
       </Box>
-      <TableContainer sx={{ maxHeight: '70vh' }}>
+      <TableContainer sx={{ minHeight: '74vh' }}>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
@@ -122,16 +126,9 @@ const IndexPage = () => {
                   </TableCell>
                 </TableRow>
               )}
-              {isError && (
-                <TableRow>
-                  <TableCell colSpan={4}>
-                    <ErrorMessage>{ApiError.pleaseTryLater}</ErrorMessage>
-                  </TableCell>
-                </TableRow>
-              )}
               {!isFetching &&
                 !isError &&
-                data.map((row) => {
+                cryptoCurrencies.map((row) => {
                   return (
                     <TableRow
                       hover

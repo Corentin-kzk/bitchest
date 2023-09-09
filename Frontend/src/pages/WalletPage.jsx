@@ -24,13 +24,17 @@ import {
   TableRow,
   ToggleButton,
   ToggleButtonGroup,
+  Tooltip,
   Typography,
 } from '@mui/material'
 import {
+  AccountBalance,
   CurrencyExchange,
   Euro,
   FilterList,
   ListAlt,
+  TrendingDown,
+  TrendingUp,
 } from '@mui/icons-material'
 import { Loader } from '@components/atom/Loader'
 import PieChart from '../components/atom/PieChart'
@@ -194,6 +198,7 @@ function WalletPage() {
                       <TableCell>Type</TableCell>
                       <TableCell>Quantité</TableCell>
                       <TableCell>Prix</TableCell>
+                      <TableCell>Profit</TableCell>
                       <TableCell colSpan={2} align='center'>
                         {" Date d'achat / vente"}
                       </TableCell>
@@ -226,10 +231,10 @@ function WalletPage() {
                                 },
                               }}
                             >
-                              <TableCell component='th' scope='row'>
+                              <TableCell scope='row'>
                                 {cryptoHistory.crypto_currency?.label}
                               </TableCell>
-                              <TableCell component='th' scope='row'>
+                              <TableCell scope='row'>
                                 <Typography
                                   color={
                                     cryptoHistory?.type === 'buy'
@@ -242,10 +247,10 @@ function WalletPage() {
                                     : 'Vente'}
                                 </Typography>
                               </TableCell>
-                              <TableCell component='th' scope='row'>
+                              <TableCell scope='row'>
                                 {cryptoHistory?.amount}
                               </TableCell>
-                              <TableCell component='th' scope='row'>
+                              <TableCell scope='row'>
                                 <Box
                                   sx={{
                                     display: 'flex',
@@ -259,18 +264,50 @@ function WalletPage() {
                                   <Euro fontSize='6px' />
                                 </Box>
                               </TableCell>
-                              <TableCell
-                                component='th'
-                                scope='row'
-                                align='right'
-                              >
+                              <TableCell scope='row'>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                  }}
+                                >
+                                  {cryptoHistory.type === 'buy' ? (
+                                    <>
+                                      <Tooltip
+                                        title={
+                                          'Impossible de faire un profit sur un achat.'
+                                        }
+                                      >
+                                        <AccountBalance />
+                                      </Tooltip>
+                                    </>
+                                  ) : (
+                                    <>
+                                      {+cryptoHistory?.profit *
+                                        cryptoHistory?.amount >
+                                      0 ? (
+                                        <TrendingUp color='primary' />
+                                      ) : (
+                                        <TrendingDown color='error' />
+                                      )}
+                                      {(
+                                        cryptoHistory?.profit *
+                                        cryptoHistory?.amount
+                                      ).toLocaleString('fr-FR')}
+                                      <Euro fontSize='6px' />
+                                    </>
+                                  )}
+                                </Box>
+                              </TableCell>
+                              <TableCell scope='row' align='right'>
                                 {dayjs(cryptoHistory?.created_at).format(
                                   'HH:mm:ss '
                                 )}
                               </TableCell>
-                              <TableCell component='th' scope='row'>
+                              <TableCell scope='row'>
                                 {dayjs(cryptoHistory?.created_at).format(
-                                  'YYYY-MM-DD'
+                                  'DD/MM/YYYY'
                                 )}
                               </TableCell>
                             </TableRow>
@@ -280,7 +317,7 @@ function WalletPage() {
                         {transactions.data.total === 0 &&
                           historyRenderType === 'selectedChart' && (
                             <TableRow>
-                              <TableCell component='th' scope='row' colSpan={6}>
+                              <TableCell scope='row' colSpan={6}>
                                 <Typography color={red[500]}>
                                   Veuillez sélectionner une valeur du graphique
                                 </Typography>

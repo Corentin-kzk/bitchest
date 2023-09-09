@@ -2,6 +2,7 @@ import _Chart from 'react-apexcharts'
 import dayjs from 'dayjs'
 import { green } from '@mui/material/colors'
 import { last } from 'lodash'
+import PropTypes from 'prop-types'
 
 export function Chart({ series }) {
   const formatedData = series.map((item) => {
@@ -105,6 +106,15 @@ export function Chart({ series }) {
       width='100%'
     />
   )
+}
+
+Chart.propTypes = {
+  series: PropTypes.arrayOf(
+    PropTypes.shape({
+      created_at: PropTypes.string.isRequired,
+      price: PropTypes.number.isRequired,
+    })
+  ).isRequired,
 }
 
 export default Chart

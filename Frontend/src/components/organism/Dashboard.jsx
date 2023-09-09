@@ -1,5 +1,4 @@
-import * as React from 'react'
-import { styled } from '@mui/material/styles'
+import { styled, useTheme } from '@mui/material/styles'
 import CssBaseline from '@mui/material/CssBaseline'
 import MuiDrawer from '@mui/material/Drawer'
 import Box from '@mui/material/Box'
@@ -18,17 +17,22 @@ import DashboardIcon from '@mui/icons-material/Dashboard'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 import { Outlet, useNavigate, useLocation } from 'react-router'
 import {
-  AccountCircle,
   AdminPanelSettings,
   Euro,
   Logout,
   Settings,
+  Wallet,
 } from '@mui/icons-material'
 import Image from '../atom/Image'
 import axios from '@api/config'
 import { useDispatch } from 'react-redux'
 import { setUser } from '../../reducers/userReducer'
-import { CircularProgress, Tooltip, Typography } from '@mui/material'
+import {
+  CircularProgress,
+  Tooltip,
+  Typography,
+  useMediaQuery,
+} from '@mui/material'
 import { isEqual } from 'lodash'
 import { useState } from 'react'
 import { useSession } from '../../hooks/useSession'
@@ -37,6 +41,7 @@ import { MyUser_QK, getMyUser } from '@api/me'
 import { useEffect } from 'react'
 import { linkUrl } from '../../utils/linkUrl'
 import { showDialogAction } from '../../reducers/dialogReducer'
+import SmallBitchestLogo from '../../../public/smallbitchest.svg'
 
 const drawerWidth = 260
 
@@ -57,7 +62,6 @@ const AppBar = styled(MuiAppBar, {
     }),
   }),
 }))
-
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -87,6 +91,9 @@ const Drawer = styled(MuiDrawer, {
 export default function Dashboard() {
   const [open, setOpen] = useState(false)
   const { destroySession } = useSession()
+  const [balanceIsVisible, setBalanceIsVisible] = useState(false)
+  const globalTheme = useTheme()
+  const matches = useMediaQuery(globalTheme.breakpoints.up('lg'))
 
   const dispatch = useDispatch()
   const { data: user, isLoading } = useQuery({
@@ -116,10 +123,13 @@ export default function Dashboard() {
     })
   }
 
+  useEffect(() => {
+    setBalanceIsVisible(matches)
+  }, [matches])
+
   return (
     <>
       <Box sx={{ display: 'flex' }}>
-        <CssBaseline />
         <AppBar position='absolute' open={open} color='secondary'>
           <Toolbar
             sx={{
@@ -139,22 +149,28 @@ export default function Dashboard() {
               <MenuIcon />
             </IconButton>
             <Box color='inherit' sx={{ position: 'relative', flexGrow: 1 }}>
-              <Image
-                src={'/bitchest_logo.png'}
-                width={'100px'}
-                height={'50px'}
-              />
-              {isEqual(user?.role, 'admin') && (
-                <Typography
-                  sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '100px',
-                    fontSize: '8px',
-                  }}
-                >
-                  Admin
-                </Typography>
+              {!balanceIsVisible || matches ? (
+                <>
+                  <Image
+                    src={'/bitchest_logo.png'}
+                    width={'100px'}
+                    height={'50px'}
+                  />
+                  {isEqual(user?.role, 'admin') && (
+                    <Typography
+                      sx={{
+                        position: 'absolute',
+                        top: '50%',
+                        left: '100px',
+                        fontSize: '8px',
+                      }}
+                    >
+                      Admin
+                    </Typography>
+                  )}
+                </>
+              ) : (
+                <Image src={SmallBitchestLogo} width={'50px'} height={'50px'} />
               )}
             </Box>
 
@@ -178,34 +194,30 @@ export default function Dashboard() {
                   gap: '3px',
                 }}
               >
-                <Typography fontSize={10}>Solde :</Typography>
                 {!isLoading && user?.wallet && (
-                  <Typography
-                    color={+user.wallet.balance < 20 ? 'error' : 'primary'}
-                  >
-                    {(+user.wallet.balance).toLocaleString('fr-FR')}
-                  </Typography>
+                  <>
+                    <IconButton
+                      color='inherit'
+                      onClick={() => setBalanceIsVisible(!balanceIsVisible)}
+                    >
+                      <Wallet />
+                    </IconButton>
+                    {balanceIsVisible && (
+                      <>
+                        <Typography
+                          color={
+                            +user.wallet.balance < 20 ? 'error' : 'primary'
+                          }
+                        >
+                          {(+user.wallet.balance).toLocaleString('fr-FR')}
+                        </Typography>
+                        <Euro fontSize='' />
+                      </>
+                    )}
+                  </>
                 )}
                 {isLoading && <CircularProgress size={15} color='primary' />}
-                <Euro fontSize='' />
               </Box>
-              <Tooltip title='Mon compte'>
-                <IconButton
-                  color='inherit'
-                  onClick={() =>
-                    dispatch(
-                      showDialogAction({
-                        formName: 'userMeForm',
-                        dialogProps: {
-                          submitLabel: 'Modifier',
-                        },
-                      })
-                    )
-                  }
-                >
-                  <AccountCircle />
-                </IconButton>
-              </Tooltip>
             </Box>
 
             <Tooltip title='Se déconncter'>
@@ -230,54 +242,66 @@ export default function Dashboard() {
           </Toolbar>
           <Divider />
           <List component='nav'>
-            <ListItemButton
-              component='a'
-              href={linkUrl.home}
-              selected={location.pathname === linkUrl.home}
-            >
-              <ListItemIcon>
-                <DashboardIcon />
-              </ListItemIcon>
-              <ListItemText primary='Liste des cryptomonaies' />
-            </ListItemButton>
-            <ListItemButton
-              component='a'
-              href={linkUrl.wallet}
-              selected={location.pathname === linkUrl.wallet}
-            >
-              <ListItemIcon>
-                <ShoppingCartIcon />
-              </ListItemIcon>
-              <ListItemText primary='Portefeuille' />
-            </ListItemButton>
-            <ListItemButton
-              onClick={() =>
-                dispatch(
-                  showDialogAction({
-                    formName: 'userMeForm',
-                    dialogProps: {
-                      submitLabel: 'Modifier',
-                    },
-                  })
-                )
-              }
-            >
-              <ListItemIcon>
-                <Settings />
-              </ListItemIcon>
-              <ListItemText primary='Paramètre' />
-            </ListItemButton>
-            {isEqual(user?.role, 'admin') && (
-              <ListItemButton
-                component='a'
-                href={linkUrl.users}
-                selected={location.pathname === linkUrl.users}
-              >
-                <ListItemIcon>
-                  <AdminPanelSettings />
-                </ListItemIcon>
-                <ListItemText primary="Panneau d'administration" />
+            {isLoading && (
+              <ListItemButton>
+                <Box>
+                  <CircularProgress color='primary' />
+                </Box>
               </ListItemButton>
+            )}
+            {!isLoading && (
+              <>
+                <ListItemButton
+                  component='a'
+                  href={linkUrl.home}
+                  selected={location.pathname === linkUrl.home}
+                >
+                  <ListItemIcon>
+                    <DashboardIcon />
+                  </ListItemIcon>
+                  <ListItemText primary='Liste des cryptomonaies' />
+                </ListItemButton>
+                {isEqual(user?.role, 'admin') ? (
+                  <ListItemButton
+                    component='a'
+                    href={linkUrl.users}
+                    selected={location.pathname === linkUrl.users}
+                  >
+                    <ListItemIcon>
+                      <AdminPanelSettings />
+                    </ListItemIcon>
+                    <ListItemText primary="Panneau d'administration" />
+                  </ListItemButton>
+                ) : (
+                  <ListItemButton
+                    component='a'
+                    href={linkUrl.wallet}
+                    selected={location.pathname === linkUrl.wallet}
+                  >
+                    <ListItemIcon>
+                      <ShoppingCartIcon />
+                    </ListItemIcon>
+                    <ListItemText primary='Portefeuille' />
+                  </ListItemButton>
+                )}
+                <ListItemButton
+                  onClick={() =>
+                    dispatch(
+                      showDialogAction({
+                        formName: 'userMeForm',
+                        dialogProps: {
+                          submitLabel: 'Modifier',
+                        },
+                      })
+                    )
+                  }
+                >
+                  <ListItemIcon>
+                    <Settings />
+                  </ListItemIcon>
+                  <ListItemText primary='Paramètre' />
+                </ListItemButton>
+              </>
             )}
           </List>
         </Drawer>

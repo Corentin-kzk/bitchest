@@ -17,15 +17,15 @@ import { buyCrypto } from '@api/crypto'
 import { showAlertAction } from '../../../reducers/alertReducer'
 import { MyUser_QK } from '@api/me'
 import { floor, toNumber } from 'lodash'
+import { MyWallet_QK } from '../../../api/me'
 
 const BuyForm = () => {
   const props = useSelector(getDialogProps)
   const isSubmit = useSelector(isSubmited)
   const queryClient = useQueryClient()
-  console.log('🚀 ~ file: BuyForm.jsx:22 ~ BuyForm ~ isSubmit:', isSubmit)
+
   const mutation = useMutation(buyCrypto, {
-    onSuccess: (v) => {
-      console.log('🚀 ~ file: BuyForm.jsx:22 ~ mutation ~ v:', v)
+    onSuccess: () => {
       dispatch(
         showAlertAction({
           status: 'success',
@@ -33,6 +33,7 @@ const BuyForm = () => {
         })
       )
       queryClient.invalidateQueries({ queryKey: [MyUser_QK] })
+      queryClient.invalidateQueries({ queryKey: [MyWallet_QK] })
     },
     onError: (error) => {
       dispatch(

@@ -83,14 +83,6 @@ export default function UserMeForm() {
     validationSchema: validationSchema.userMeEdit,
     onSubmit: async (values) => {
       const { name, email, balance, password, confirmPassword } = values
-      console.log(
-        '🚀 ~ file: UserMeForm.jsx:84 ~ onSubmit: ~  name, email, balance, password, confirmPassword :',
-        name,
-        email,
-        balance,
-        password,
-        confirmPassword
-      )
 
       await userMutation.mutateAsync(
         {
@@ -159,10 +151,7 @@ export default function UserMeForm() {
         <>
           <TabContext value={tabPanelId}>
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-              <TabList
-                onChange={handleChange}
-                aria-label='lab API tabs example'
-              >
+              <TabList onChange={handleChange} aria-label='Acount-and-balance'>
                 <Tab label='Compte' value='1' />
                 <Tab label='Solde' value='2' />
               </TabList>
@@ -186,6 +175,7 @@ export default function UserMeForm() {
                     flexDirection: 'row',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    flexWrap: 'wrap',
                     gap: '20px',
                   }}
                 >
@@ -234,6 +224,7 @@ export default function UserMeForm() {
                     flexDirection: 'row',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    flexWrap: 'wrap',
                     gap: '20px',
                   }}
                 >

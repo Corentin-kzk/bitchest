@@ -1,5 +1,5 @@
 import Grid from '@mui/material/Unstable_Grid2'
-import { useNavigate, useParams } from 'react-router-dom'
+import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Crypto_QK, getCrypto } from '../api/crypto'
 import { useQuery } from '@tanstack/react-query'
 import { isEmpty } from 'lodash'
@@ -11,6 +11,7 @@ import { linkUrl } from '../utils/linkUrl'
 import { MyUser_QK, MyWallet_QK, getMyUser, getMyWallet } from '../api/me'
 import { useDispatch } from 'react-redux'
 import { showDialogAction } from '../reducers/dialogReducer'
+import Image from '../components/atom/Image'
 
 export const CryptoPage = () => {
   const { id } = useParams()
@@ -20,7 +21,6 @@ export const CryptoPage = () => {
     queryFn: () => getCrypto(id),
     refetchOnWindowFocus: false,
   })
-
   const {
     data: user,
     isFetching: userIsFetching,
@@ -41,7 +41,7 @@ export const CryptoPage = () => {
   })
 
   const navigate = useNavigate()
-  if (isError) return <Navigate to={'/500'} />
+  if (isError) return <Navigate to={'/5OO'} />
   return (
     <>
       {isFetching && (
@@ -77,81 +77,102 @@ export const CryptoPage = () => {
                 dashboard
               </Button>
             </Box>
-            <img src={data.logo}></img>
-            <Typography component='h1'>{data.label}</Typography>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '10px',
+              }}
+            >
+              <Image src={data.logo} width={'100px'} height={'100px'} />
+              <Typography component='h1' variant='h1'>
+                {data.label}
+              </Typography>
+            </Box>
           </Grid>
-          <Grid
-            xs={12}
-            sx={{
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'center',
-              alignItems: 'flex-end',
-              gap: '10px',
-            }}
-          >
-            {!userIsError && (
-              <>
-                <Button
-                  variant='outlined'
-                  color='secondary'
-                  disabled={
-                    (userIsFetching && walletIsFetching) ||
-                    walletIsError ||
-                    userIsError
-                  }
-                  endIcon={
-                    userIsFetching && walletIsFetching ? (
-                      <CircularProgress size={10} />
-                    ) : (
-                      <Sell />
-                    )
-                  }
-                  onClick={() =>
-                    dispatch(
-                      showDialogAction({
-                        formName: 'sellForm',
-                        dialogProps: { submitLabel: 'Vendre' },
-                        formProps: {
-                          coin: { ...data },
-                          user: { ...user },
-                          wallet: wallet?.crypto_wallet.find(
-                            (wallet) =>
-                              wallet.crypto_currency.label === data.label
-                          ),
-                        },
-                      })
-                    )
-                  }
+          {user && user.role !== 'admin' && (
+            <Grid
+              xs={12}
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'flex-end',
+                gap: '10px',
+              }}
+            >
+              {!userIsError && (
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: '10px',
+                  }}
                 >
-                  Vendre
-                </Button>
-                <Button
-                  variant='outlined'
-                  color='secondary'
-                  disabled={userIsFetching || userIsError}
-                  endIcon={
-                    userIsFetching ? (
-                      <CircularProgress size={10} />
-                    ) : (
-                      <AddShoppingCart />
-                    )
-                  }
-                  onClick={() =>
-                    dispatch(
-                      showDialogAction({
-                        formName: 'buyForm',
-                        dialogProps: { submitLabel: 'Acheter' },
-                        formProps: { coin: { ...data }, user: { ...user } },
-                      })
-                    )
-                  }
-                >
-                  Acheter
-                </Button>
-              </>
-            )}
-          </Grid>
+                  <Button
+                    variant='outlined'
+                    color='secondary'
+                    disabled={userIsFetching || userIsError}
+                    endIcon={
+                      userIsFetching ? (
+                        <CircularProgress size={10} />
+                      ) : (
+                        <AddShoppingCart />
+                      )
+                    }
+                    onClick={() =>
+                      dispatch(
+                        showDialogAction({
+                          formName: 'buyForm',
+                          dialogProps: { submitLabel: 'Acheter' },
+                          formProps: { coin: { ...data }, user: { ...user } },
+                        })
+                      )
+                    }
+                  >
+                    Acheter
+                  </Button>
+                  <Button
+                    variant='outlined'
+                    color='secondary'
+                    disabled={
+                      (userIsFetching && walletIsFetching) ||
+                      walletIsError ||
+                      userIsError
+                    }
+                    endIcon={
+                      userIsFetching && walletIsFetching ? (
+                        <CircularProgress size={10} />
+                      ) : (
+                        <Sell />
+                      )
+                    }
+                    onClick={() =>
+                      dispatch(
+                        showDialogAction({
+                          formName: 'sellForm',
+                          dialogProps: { submitLabel: 'Vendre' },
+                          formProps: {
+                            coin: { ...data },
+                            user: { ...user },
+                            wallet: wallet?.crypto_wallet.find(
+                              (wallet) =>
+                                wallet.crypto_currency.label === data.label
+                            ),
+                          },
+                        })
+                      )
+                    }
+                  >
+                    Vendre
+                  </Button>
+                </Box>
+              )}
+            </Grid>
+          )}
+
           <Grid xs={12} sx={{ height: '50vh' }}>
             <Chart series={data.history} />
           </Grid>

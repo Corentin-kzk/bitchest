@@ -13,9 +13,7 @@ class WalletController extends Controller
             ->with([
                 'cryptoWallet.cryptoCurrency' => function ($query) {
                     $query->select('label', 'id');
-                }, 'transaction.cryptoCurrency' => function ($query) {
-                    $query->select('label', 'id');
-                }
+                },
             ])
             ->first();
         return response()->json($wallet);

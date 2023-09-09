@@ -1,3 +1,4 @@
+// This file references error messages from the entire application
 export const globalError = {
   email: 'Adresse e-mail invalide',
   emailRequired: "L'adresse email est requise",

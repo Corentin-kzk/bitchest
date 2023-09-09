@@ -1,3 +1,4 @@
+//This file references navigation links
 export const linkUrl = {
   home: '/dashboard',
   admin: '/dashboard/admin',

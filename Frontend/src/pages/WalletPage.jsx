@@ -1,9 +1,16 @@
 import { useQuery } from '@tanstack/react-query'
-import { MyWallet_QK, getMyWallet } from '../api/me'
+import {
+  MyWallet_QK,
+  Mytransction_QK,
+  getMyWallet,
+  getMytranctions,
+} from '../api/me'
 import {
   Box,
   FormControl,
   InputLabel,
+  List,
+  ListItem,
   MenuItem,
   Paper,
   Select,
@@ -15,9 +22,16 @@ import {
   TableHead,
   TablePagination,
   TableRow,
+  ToggleButton,
+  ToggleButtonGroup,
   Typography,
 } from '@mui/material'
-import { Euro } from '@mui/icons-material'
+import {
+  CurrencyExchange,
+  Euro,
+  FilterList,
+  ListAlt,
+} from '@mui/icons-material'
 import { Loader } from '@components/atom/Loader'
 import PieChart from '../components/atom/PieChart'
 import Grid from '@mui/material/Unstable_Grid2'
@@ -29,50 +43,66 @@ function WalletPage() {
   const cryptoWalletRef = useRef({ series: [], labels: [] })
   const [chartRenderType, setChartRenderType] = useState('crypto')
   const [historyRenderType, setHistoryRenderType] = useState('all')
-  const [page, setPage] = useState(0)
-  const [rowsPerPage, setRowsPerPage] = useState(8)
-  const [cryptoHistories, setCryptoHistories] = useState([])
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage)
-  }
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10))
-    setPage(0)
-  }
-  const handleCryptoHistory = (cryptoLabel) => {
-    if (historyRenderType === 'selectedChart') {
-      const histories = data?.transaction.filter(
-        (cryptoTrasction) =>
-          cryptoTrasction.crypto_currency?.label === cryptoLabel
-      )
-      setCryptoHistories(histories)
-    }
-  }
+  console.log(
+    '🚀 ~ file: WalletPage.jsx:46 ~ WalletPage ~ historyRenderType:',
+    historyRenderType
+  )
+  const [page, setPage] = useState(1)
+  const [cryptoHistoryId, setCryptoHistoryID] = useState(null)
 
-  const { data, isFetching } = useQuery({
+  const { data: wallet, isFetching: isWalletFetching } = useQuery({
     queryKey: [MyWallet_QK],
     queryFn: () => getMyWallet(),
     refetchOnWindowFocus: false,
   })
 
+  const {
+    data: transactions,
+    isFetching: isTransactionsFetching,
+    isError: isTransactionsError,
+  } = useQuery({
+    queryKey: [Mytransction_QK, page, cryptoHistoryId],
+    queryFn: () => getMytranctions(page, cryptoHistoryId),
+    refetchOnWindowFocus: false,
+  })
+
   useEffect(() => {
-    if (historyRenderType === 'all' && data?.transaction) {
-      setCryptoHistories(data.transaction)
+    if (!isTransactionsFetching && !isTransactionsError && !!transactions) {
+      setPage(transactions.current_page)
     }
-  }, [historyRenderType, data])
+  }, [isTransactionsFetching, isTransactionsError])
+
+  const handlePageChange = (_, pageNumber) => {
+    setPage(pageNumber + 1)
+  }
+
+  const handleCryptoHistory = (cryptoLabel) => {
+    if (historyRenderType === 'selectedChart') {
+      const histories = wallet?.crypto_wallet.find(
+        (cryptoWallet) => cryptoWallet.crypto_currency?.label === cryptoLabel
+      )
+      setCryptoHistoryID(histories.crypto_currency.id)
+    }
+  }
+
+  useEffect(() => {
+    if (historyRenderType === 'all') {
+      setCryptoHistoryID(null)
+    }
+  }, [historyRenderType])
 
   useMemo(() => {
-    cryptoWalletRef.current.series = data?.crypto_wallet?.map((myCrypto) =>
+    cryptoWalletRef.current.series = wallet?.crypto_wallet?.map((myCrypto) =>
       chartRenderType === 'crypto' ? +myCrypto?.amount : +myCrypto?.balance
     )
-    cryptoWalletRef.current.labels = data?.crypto_wallet?.map(
+    cryptoWalletRef.current.labels = wallet?.crypto_wallet?.map(
       (myCrypto) => myCrypto.crypto_currency?.label
     )
-  }, [data?.crypto_wallet, chartRenderType])
+  }, [wallet?.crypto_wallet, chartRenderType])
 
   return (
     <>
-      {isFetching && (
+      {isWalletFetching && isTransactionsFetching && (
         <Box
           sx={{
             display: 'flex',
@@ -84,40 +114,36 @@ function WalletPage() {
           <Loader />
         </Box>
       )}
-      {!isFetching && (
+      {!isWalletFetching && (
         <Paper sx={{ p: 2 }}>
-          <Grid container spacing={2} sx={{ height: '90vh' }}>
-            <Grid
-              xs={12}
-              md={6}
-              sx={{
-                height: '70vh',
-              }}
-            >
-              <Typography component='h1' variant='h2' sx={{ my: 4 }}>
-                Votre portefeuille crypto
-              </Typography>
+          <Typography component='h1' variant='h2' sx={{ my: 2 }}>
+            Portefeuille
+          </Typography>
+
+          <Grid container spacing={2} sx={{ minHeight: '80vh' }}>
+            <Grid xs={12} md={6}>
               <Box
                 sx={{
                   display: 'flex',
                   justifyContent: 'flex-end',
                 }}
               >
-                <FormControl sx={{ maxWidth: '35%' }} fullWidth>
-                  <Select
-                    labelId='type-select-label'
-                    id='type-select'
-                    value={chartRenderType}
-                    label='Type'
-                    onChange={(e) => setChartRenderType(e.target.value)}
-                    variant='standard'
-                  >
-                    <MenuItem value={'crypto'}>
-                      Montant de crypto monaie
-                    </MenuItem>
-                    <MenuItem value={'euro'}>Valeur en euro</MenuItem>
-                  </Select>
-                </FormControl>
+                <ToggleButtonGroup
+                  color='primary'
+                  value={chartRenderType}
+                  exclusive
+                  onChange={(_, newAlignment) =>
+                    setChartRenderType(newAlignment)
+                  }
+                  aria-label='Platform'
+                >
+                  <ToggleButton value='crypto'>
+                    <CurrencyExchange />
+                  </ToggleButton>
+                  <ToggleButton value='euro'>
+                    <Euro />
+                  </ToggleButton>
+                </ToggleButtonGroup>
               </Box>
               <PieChart
                 getSelectedValue={handleCryptoHistory}
@@ -129,38 +155,36 @@ function WalletPage() {
               xs={12}
               md={6}
               sx={{
-                height: '70vh',
+                maxHeight: '70vh',
               }}
             >
-              <Typography
-                component='h2'
-                variant='h4'
-                sx={{ my: 5, textAlign: 'right' }}
-              >
-                Historique
-              </Typography>
               <Box
                 sx={{
                   display: 'flex',
-                  justifyContent: 'flex-end',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
                 }}
               >
-                <FormControl sx={{ maxWidth: '35%' }} fullWidth>
-                  <InputLabel id='type-select-label'>Type</InputLabel>
-                  <Select
-                    labelId='type-select-label'
-                    id='type-select'
-                    value={historyRenderType}
-                    label='Type'
-                    onChange={(e) => setHistoryRenderType(e.target.value)}
-                    variant='standard'
-                  >
-                    <MenuItem value={'all'}>historique de transaction</MenuItem>
-                    <MenuItem value={'selectedChart'}>
-                      historique de transaction ciblé
-                    </MenuItem>
-                  </Select>
-                </FormControl>
+                <Typography
+                  component='h2'
+                  variant='h4'
+                  sx={{ textAlign: 'right' }}
+                >
+                  Historique
+                </Typography>
+                <ToggleButtonGroup
+                  color='primary'
+                  value={historyRenderType}
+                  exclusive
+                  onChange={(_, newAlignment) => {
+                    setHistoryRenderType(newAlignment ? newAlignment : 'all')
+                  }}
+                  aria-label='Platform'
+                >
+                  <ToggleButton value='selectedChart'>
+                    <FilterList />
+                  </ToggleButton>
+                </ToggleButtonGroup>
               </Box>
               <TableContainer component={Paper} sx={{ mt: 2 }}>
                 <Table sx={{ minWidth: 650, maxHeight: '65vh' }}>
@@ -171,83 +195,114 @@ function WalletPage() {
                       <TableCell>Quantité</TableCell>
                       <TableCell>Prix</TableCell>
                       <TableCell colSpan={2} align='center'>
-                        Date d'achat / vente
+                        {" Date d'achat / vente"}
                       </TableCell>
                     </TableRow>
                   </TableHead>
-                  <TableBody>
-                    {(rowsPerPage > 0
-                      ? cryptoHistories.slice(
-                          page * rowsPerPage,
-                          page * rowsPerPage + rowsPerPage
-                        )
-                      : cryptoHistories
-                    ).map((cryptoHistory) => {
-                      return (
-                        <TableRow
-                          key={cryptoHistory.id}
-                          sx={{
-                            '&:last-child td, &:last-child th': { border: 0 },
-                          }}
-                        >
-                          <TableCell component='th' scope='row'>
-                            {cryptoHistory.crypto_currency?.label}
-                          </TableCell>
-                          <TableCell component='th' scope='row'>
-                            {cryptoHistory?.type === 'buy' ? 'Achat' : 'Vente'}
-                          </TableCell>
-                          <TableCell component='th' scope='row'>
-                            {cryptoHistory?.amount}
-                          </TableCell>
-                          <TableCell component='th' scope='row'>
-                            <Box
+                  {isTransactionsFetching && (
+                    <TableRow>
+                      <Box
+                        sx={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          minHeight: '80vh',
+                        }}
+                      >
+                        <Loader />
+                      </Box>
+                    </TableRow>
+                  )}
+                  {!isTransactionsFetching && transactions.data && (
+                    <>
+                      <TableBody>
+                        {transactions.data.map((cryptoHistory) => {
+                          return (
+                            <TableRow
+                              key={cryptoHistory.id}
                               sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '5px',
+                                '&:last-child td, &:last-child th': {
+                                  border: 0,
+                                },
                               }}
                             >
-                              {(+cryptoHistory?.price).toLocaleString('fr-FR')}
-                              <Euro fontSize='6px' />
-                            </Box>
-                          </TableCell>
-                          <TableCell component='th' scope='row' align='right'>
-                            {dayjs(cryptoHistory?.created_at).format(
-                              'HH:mm:ss '
-                            )}
-                          </TableCell>
-                          <TableCell component='th' scope='row'>
-                            {dayjs(cryptoHistory?.created_at).format(
-                              'YYYY-MM-DD'
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                    {cryptoHistories.length === 0 &&
-                      historyRenderType === 'selectedChart' && (
-                        <TableRow>
-                          <TableCell component='th' scope='row' colSpan={6}>
-                            <Typography color={red[500]}>
-                              Veuillez sélectionner une valeur du graphique
-                            </Typography>
-                          </TableCell>
-                        </TableRow>
+                              <TableCell component='th' scope='row'>
+                                {cryptoHistory.crypto_currency?.label}
+                              </TableCell>
+                              <TableCell component='th' scope='row'>
+                                <Typography
+                                  color={
+                                    cryptoHistory?.type === 'buy'
+                                      ? 'primary'
+                                      : 'error'
+                                  }
+                                >
+                                  {cryptoHistory?.type === 'buy'
+                                    ? 'Achat'
+                                    : 'Vente'}
+                                </Typography>
+                              </TableCell>
+                              <TableCell component='th' scope='row'>
+                                {cryptoHistory?.amount}
+                              </TableCell>
+                              <TableCell component='th' scope='row'>
+                                <Box
+                                  sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '5px',
+                                  }}
+                                >
+                                  {(+cryptoHistory?.price).toLocaleString(
+                                    'fr-FR'
+                                  )}
+                                  <Euro fontSize='6px' />
+                                </Box>
+                              </TableCell>
+                              <TableCell
+                                component='th'
+                                scope='row'
+                                align='right'
+                              >
+                                {dayjs(cryptoHistory?.created_at).format(
+                                  'HH:mm:ss '
+                                )}
+                              </TableCell>
+                              <TableCell component='th' scope='row'>
+                                {dayjs(cryptoHistory?.created_at).format(
+                                  'YYYY-MM-DD'
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          )
+                        })}
+
+                        {transactions.data.total === 0 &&
+                          historyRenderType === 'selectedChart' && (
+                            <TableRow>
+                              <TableCell component='th' scope='row' colSpan={6}>
+                                <Typography color={red[500]}>
+                                  Veuillez sélectionner une valeur du graphique
+                                </Typography>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                      </TableBody>
+
+                      {transactions.total >= 8 && (
+                        <TableFooter>
+                          <TableRow>
+                            <TablePagination
+                              rowsPerPageOptions={[8]}
+                              count={transactions.total || 0}
+                              rowsPerPage={transactions.per_page}
+                              page={page - 1}
+                              onPageChange={handlePageChange}
+                            />
+                          </TableRow>
+                        </TableFooter>
                       )}
-                  </TableBody>
-                  {cryptoHistories.length >= 8 && (
-                    <TableFooter>
-                      <TableRow>
-                        <TablePagination
-                          rowsPerPageOptions={[8]}
-                          count={cryptoHistories.length}
-                          rowsPerPage={rowsPerPage}
-                          page={page}
-                          onPageChange={handleChangePage}
-                          onRowsPerPageChange={handleChangeRowsPerPage}
-                        />
-                      </TableRow>
-                    </TableFooter>
+                    </>
                   )}
                 </Table>
               </TableContainer>

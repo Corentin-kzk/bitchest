@@ -1,5 +1,6 @@
 import Chart from 'react-apexcharts'
-import generateRandomColorFromString from '../../utils/getRandowColors'
+import generateRandomColorFromString from '@utils/getRandowColors'
+import PropTypes from 'prop-types'
 
 function PieChart({ series, labels, getSelectedValue }) {
   const colors = labels.map((label) => generateRandomColorFromString(label))
@@ -10,7 +11,7 @@ function PieChart({ series, labels, getSelectedValue }) {
       colors: colors,
       chart: {
         events: {
-          dataPointSelection: (event, chartContext, config) => {
+          dataPointSelection: (_, chartContext, config) => {
             const selectedDataPoint = config.dataPointIndex
             getSelectedValue(labels[selectedDataPoint])
           },
@@ -19,6 +20,12 @@ function PieChart({ series, labels, getSelectedValue }) {
         type: 'pie',
       },
       labels: labels,
+      dataLabels: {
+        formatter(val, opts) {
+          const name = opts.w.globals.labels[opts.seriesIndex]
+          return [name]
+        },
+      },
     },
   }
 
@@ -29,4 +36,9 @@ function PieChart({ series, labels, getSelectedValue }) {
   )
 }
 
+PieChart.propTypes = {
+  series: PropTypes.array.isRequired, // series doit être un tableau requis
+  labels: PropTypes.array.isRequired, // labels doit être un tableau requis
+  getSelectedValue: PropTypes.func.isRequired, // getSelectedValue doit être une fonction requise
+}
 export default PieChart

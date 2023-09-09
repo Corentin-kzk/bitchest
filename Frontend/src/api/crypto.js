@@ -13,16 +13,16 @@ export const getCrypto = async (id) => {
 }
 
 export const buyCrypto = async ({ id, amount }) => {
-  const crypto = await axios.post(`api/cryptos/buy_crypto`, {
+  const crypto = await axios.post(`api/cryptos/buy`, {
     amount,
     id,
   })
   return crypto.data
 }
-export const sellCrypto = async ({ id, amount }) => {
-  const crypto = await axios.post(`api/cryptos/sell_crypto`, {
-    amount,
-    id,
+export const sellCrypto = async ({ cryptoId, transactionId }) => {
+  const crypto = await axios.post(`api/cryptos/sell`, {
+    cryptoId,
+    transactionId,
   })
   return crypto.data
 }

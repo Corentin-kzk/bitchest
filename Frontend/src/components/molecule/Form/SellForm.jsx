@@ -1,4 +1,17 @@
-import { Box, Button, TextField, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  Table,
+  TableBody,
+  TableCell,
+  TableRow,
+  TextField,
+  Typography,
+} from '@mui/material'
 import { useFormik } from 'formik'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -8,21 +21,25 @@ import {
   isSubmitAction,
   isSubmited,
 } from '../../../reducers/dialogReducer'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Euro, Percent } from '@mui/icons-material'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { ApiError, globalError } from '../../../utils/globalErrors'
 import { validationSchema } from '../../../utils/yupValidation'
 import { sellCrypto } from '@api/crypto'
 import { showAlertAction } from '../../../reducers/alertReducer'
 import { MyUser_QK } from '@api/me'
 import { floor, toNumber } from 'lodash'
+import dayjs from 'dayjs'
+import { MyWallet_QK, Mytransction_QK, getMytranctions } from '../../../api/me'
 
 const SellForm = () => {
   const props = useSelector(getDialogProps)
+  const { coin, wallet } = props
   const isSubmit = useSelector(isSubmited)
   const queryClient = useQueryClient()
   const dispatch = useDispatch()
+  const [selectedId, setSelectedId] = useState('')
 
   const mutation = useMutation(sellCrypto, {
     onSuccess: () => {
@@ -32,7 +49,9 @@ const SellForm = () => {
           message: `Bravo! Votre vente a été réalisé avec succès.`,
         })
       )
-      queryClient.invalidateQueries({ queryKey: [MyUser_QK] })
+      queryClient.invalidateQueries({
+        queryKey: [MyUser_QK, MyWallet_QK, Mytransction_QK],
+      })
     },
     onError: (error) => {
       dispatch(
@@ -52,44 +71,46 @@ const SellForm = () => {
 
   const formik = useFormik({
     validationSchema: validationSchema.cryptoBuy,
-    initialValues: { amount: '' },
-    onSubmit: (values) => {
-      mutation.mutateAsync({ amount: values.amount, id: props.coin.id })
-    },
-    validate: (values) => {
-      const balanceAfterPurchase = props.wallet.amount - values.amount
-
-      if (balanceAfterPurchase < 0) {
-        return { amount: globalError.negativeBalance }
-      }
-
-      return {}
+    initialValues: { amount: '', price: '' },
+    onSubmit: () => {
+      mutation.mutateAsync({
+        cryptoId: props.coin.id,
+        transactionId: selectedId,
+      })
     },
     validateOnChange: true,
   })
 
   const { handleSubmit, values, setFieldValue, errors, isSubmitting } = formik
 
-  const getDiffInPercent = (num1, num2) => {
-    if (num1 === 0 || num2 === 0 || isNaN(num1) || isNaN(num2)) return 0
-    const pourcentageDifference = (num2 / 100 / num1) * 100
-    return pourcentageDifference
-  }
-
-  const handleMaxCrypto = () => {
-    const cryptoAmount = props.user.wallet.balance / props.coin.price
-    setFieldValue('amount', floor(cryptoAmount, 2))
-  }
-
   useEffect(() => {
     isSubmit && handleSubmit()
     !isSubmitting && isSubmit && dispatch(isSubmitAction(isSubmitting))
   }, [isSubmit, isSubmitting])
 
-  useEffect(() => {
-    dispatch(isErrorAction(errors.amount))
-  }, [errors.amount])
+  const {
+    data: transactions,
+    isFetching: isTransactionsFetching,
+    isError: isTransactionsError,
+  } = useQuery({
+    queryKey: [Mytransction_QK],
+    queryFn: () => getMytranctions(1, props.coin.id, false),
+    refetchOnWindowFocus: false,
+  })
 
+  useEffect(() => {
+    dispatch(isErrorAction(errors?.amount))
+  }, [errors?.amount])
+
+  const handleSelectedvalue = (value) => {
+    setSelectedId(value)
+    const transaction = transactions.data.find(
+      (transaction) => transaction.id === value
+    )
+
+    setFieldValue('amount', transaction.amount)
+    setFieldValue('price', transaction.price)
+  }
   return (
     <Box
       component='form'
@@ -101,61 +122,84 @@ const SellForm = () => {
       noValidate
       autoComplete='off'
     >
-      <Typography component='h1' variant='h4'>
-        Vendre du {props.coin.label}
-      </Typography>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-        <Typography>
-          Cour du {props.coin.label} : {props.coin.price}
-        </Typography>
-        <Euro fontSize='6' />
-      </Box>
-      <Typography>
-        Quantité de {props.coin.label} : {props.wallet.amount - values.amount}
-      </Typography>
+      <Table>
+        <TableBody>
+          <TableRow>
+            <TableCell>
+              <Typography variant='h6'>Cours :</Typography>
+            </TableCell>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-        <Typography>
-          Prix en euro : {values.amount * props.coin.price}
-        </Typography>
-        <Euro fontSize='6' />
-      </Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-        <Typography>
-          Gain potentiel :
-          {getDiffInPercent(
-            props.wallet.balance / props.wallet.amount,
-            (values.amount / values.amount) * props.coin.price
-          )}
-        </Typography>
-        <Percent fontSize='6' />
-      </Box>
-      <TextField
-        id='amount'
-        name='amount'
-        label='montant'
-        variant='standard'
-        type='number'
-        value={values.amount}
-        onChange={formik.handleChange}
-        onBlur={formik.handleBlur}
-        error={!!errors.amount}
-        helperText={errors.amount}
-        InputProps={{
-          endAdornment: <Button onClick={handleMaxCrypto}>Max</Button>,
-        }}
-      />
+            <TableCell align='center'>
+              <Typography variant='h6'>{coin?.price || 0}</Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography variant='h6'>Montant :</Typography>
+            </TableCell>
 
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-        <Typography>
-          Votre solde :
-          {(
-            toNumber(props.user.wallet.balance) +
-            values.amount * props.coin.price
-          ).toLocaleString()}
-        </Typography>
-        <Euro fontSize='6' />
-      </Box>
+            <TableCell align='center'>
+              <Typography variant='h6'>{wallet?.amount || 0}</Typography>
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography variant='h6'>Valeurs :</Typography>
+            </TableCell>
+
+            <TableCell
+              align='center'
+              sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+            >
+              <Typography variant='h6'>{wallet?.balance || 0}</Typography>
+              <Euro fontSize='6px' />
+            </TableCell>
+          </TableRow>
+          <TableRow>
+            <TableCell>
+              <Typography variant='h6'>Votre plus-value :</Typography>
+            </TableCell>
+
+            <TableCell align='center'>
+              <Typography
+                variant='h6'
+                sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
+                color={
+                  values.price / values.amount - coin.price > -1
+                    ? 'primary'
+                    : 'error'
+                }
+              >
+                {values.price / values.amount - coin.price || 0}
+                <Euro fontSize='6px' />
+              </Typography>
+            </TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
+      <FormControl fullWidth>
+        <InputLabel id='CryptoAmount'>Montant de {coin.label}</InputLabel>
+        <Select
+          labelId='CryptoAmount'
+          id='CryptoAmount'
+          value={selectedId}
+          label='Montant de cryptomonaie'
+          onChange={(e) => handleSelectedvalue(e.target.value)}
+          disabled={transactions?.data.length >= 0}
+        >
+          {transactions?.data
+            ?.filter((transaction) => {
+              return transaction.owned === 1 && transaction.type === 'buy'
+            })
+            .map((transaction) => {
+              return (
+                <MenuItem key={transaction.id} value={transaction.id}>
+                  {transaction.amount}
+                </MenuItem>
+              )
+            })}
+        </Select>
+      </FormControl>
     </Box>
   )
 }

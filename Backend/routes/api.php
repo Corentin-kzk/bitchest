@@ -4,6 +4,7 @@ use App\Http\Controllers\API\CryptoCurrencyController;
 use App\Http\Controllers\API\TransactionController;
 use App\Http\Controllers\API\UserController;
 use App\Http\Controllers\Api\WalletController;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,8 +28,9 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::middleware(['isAdmin'])->group(function () {
         Route::apiResource('users', UserController::class);
     });
-    Route::apiResource('cryptos', CryptoCurrencyController::class);
-    Route::post('cryptos/buy_crypto', [TransactionController::class, 'buyCrypto'])->name('api.buy-crypto');
-    Route::post('cryptos/sell_crypto', [TransactionController::class, 'sellCrypto'])->name('api.sell-crypto');
-    Route::get('/me/wallet', [WalletController::class, 'index'])->name('api.mywallet');
+    Route::apiResource('cryptos', CryptoCurrencyController::class)->only(['index', 'show']);
+    Route::post('cryptos/buy', [TransactionController::class, 'buyCrypto'])->name('api.buy-crypto');
+    Route::post('cryptos/sell', [TransactionController::class, 'sellCrypto'])->name('api.sell-crypto');
+    Route::get('/me/wallet', [WalletController::class, 'index'])->name('api.myWallet');
+    Route::get('/me/transactions', [TransactionController::class, 'index'])->name('api.myTransaction');
 });

@@ -4,6 +4,7 @@ import UserForm from '@components/molecule/Form/UserForm'
 import UserMeForm from '@components/molecule/Form/UserMeForm'
 import SellForm from '@components/molecule/Form/sellForm'
 
+//This file references forms from the dialog component
 const DialogForm = {
   buyForm: <BuyForm />,
   sellForm: <SellForm />,

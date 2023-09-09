@@ -17,6 +17,8 @@ return new class extends Migration
             $table->enum('type', ['buy', 'sell']);
             $table->decimal('amount', 15, 2, true)->default(0);
             $table->decimal('price', 15, 2, true)->default(0);
+            $table->decimal('profit', 15, 2)->default(0);
+            $table->boolean('owned')->default(true);
             $table->unsignedBigInteger('wallet_id');
             $table->foreign('wallet_id')->references('id')->on('wallets')->onDelete('cascade');
             $table->unsignedBigInteger('crypto_id');

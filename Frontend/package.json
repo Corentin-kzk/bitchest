@@ -26,6 +26,7 @@
     "dayjs": "^1.11.9",
     "formik": "^2.4.3",
     "lodash": "^4.17.21",
+    "props-type": "^1.0.1",
     "qs": "^6.11.2",
     "react": "^18.2.0",
     "react-apexcharts": "^1.4.1",

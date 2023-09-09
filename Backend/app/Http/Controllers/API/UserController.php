@@ -86,7 +86,8 @@ class UserController extends Controller
         return response()->json(['message' => 'User deleted'], 200);
     }
 
-    public function editMyUser(Request $request) {
+    public function editMyUser(Request $request)
+    {
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
@@ -95,13 +96,13 @@ class UserController extends Controller
             'confirmPassword' => 'same:password|nullable',
             'balance' => 'nullable|numeric|min:0',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-    
+
         $user = auth()->user();
-    
+
         $user->name = $request->input('name');
         $user->email = $request->input('email');
         if ($request->filled('password')) {
@@ -112,7 +113,7 @@ class UserController extends Controller
             $user->wallet->save();
         }
         $user->save();
-    
+
         return response()->json(['message' => 'User has been updated', 'user' => $user], 200);
     }
 }

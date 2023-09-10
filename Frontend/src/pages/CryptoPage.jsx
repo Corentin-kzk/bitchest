@@ -3,10 +3,16 @@ import { Navigate, useNavigate, useParams } from 'react-router-dom'
 import { Crypto_QK, getCrypto } from '../api/crypto'
 import { useQuery } from '@tanstack/react-query'
 import { isEmpty } from 'lodash'
-import { Box, Button, CircularProgress, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  CircularProgress,
+  IconButton,
+  Typography,
+} from '@mui/material'
 import { Loader } from '@components/atom/Loader'
 import { Chart } from '@components/atom/Chart'
-import { AddShoppingCart, ChevronLeft, Sell } from '@mui/icons-material'
+import { AddShoppingCart, ChevronLeft, House, Sell } from '@mui/icons-material'
 import { linkUrl } from '../utils/linkUrl'
 import { MyUser_QK, MyWallet_QK, getMyUser, getMyWallet } from '../api/me'
 import { useDispatch } from 'react-redux'
@@ -68,14 +74,15 @@ export const CryptoPage = () => {
             }}
           >
             <Box sx={{ alignSelf: 'self-start' }}>
-              <Button
+              <IconButton
+                icon
                 onClick={() => navigate(linkUrl.home)}
-                startIcon={<ChevronLeft />}
                 color='secondary'
                 variant='text'
               >
-                dashboard
-              </Button>
+                <ChevronLeft />
+                <House />
+              </IconButton>
             </Box>
             <Box
               sx={{

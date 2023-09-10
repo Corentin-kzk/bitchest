@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   FormControl,
   InputLabel,
   MenuItem,
@@ -9,7 +8,6 @@ import {
   TableBody,
   TableCell,
   TableRow,
-  TextField,
   Typography,
 } from '@mui/material'
 import { useFormik } from 'formik'
@@ -22,15 +20,13 @@ import {
   isSubmited,
 } from '../../../reducers/dialogReducer'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Euro, Percent } from '@mui/icons-material'
+import { Euro } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
-import { ApiError, globalError } from '../../../utils/globalErrors'
+import { ApiError } from '../../../utils/globalErrors'
 import { validationSchema } from '../../../utils/yupValidation'
 import { sellCrypto } from '@api/crypto'
 import { showAlertAction } from '../../../reducers/alertReducer'
 import { MyUser_QK } from '@api/me'
-import { floor, toNumber } from 'lodash'
-import dayjs from 'dayjs'
 import { MyWallet_QK, Mytransction_QK, getMytranctions } from '../../../api/me'
 
 const SellForm = () => {
@@ -50,7 +46,13 @@ const SellForm = () => {
         })
       )
       queryClient.invalidateQueries({
-        queryKey: [MyUser_QK, MyWallet_QK, Mytransction_QK],
+        queryKey: [MyUser_QK],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [MyWallet_QK],
+      })
+      queryClient.invalidateQueries({
+        queryKey: [Mytransction_QK],
       })
     },
     onError: (error) => {
@@ -88,11 +90,7 @@ const SellForm = () => {
     !isSubmitting && isSubmit && dispatch(isSubmitAction(isSubmitting))
   }, [isSubmit, isSubmitting])
 
-  const {
-    data: transactions,
-    isFetching: isTransactionsFetching,
-    isError: isTransactionsError,
-  } = useQuery({
+  const { data: transactions } = useQuery({
     queryKey: [Mytransction_QK],
     queryFn: () => getMytranctions(1, props.coin.id, false),
     refetchOnWindowFocus: false,
@@ -122,6 +120,9 @@ const SellForm = () => {
       noValidate
       autoComplete='off'
     >
+      <Typography component='h1' variant='h4'>
+        Vendre du {coin.label}
+      </Typography>
       <Table>
         <TableBody>
           <TableRow>
@@ -129,8 +130,11 @@ const SellForm = () => {
               <Typography variant='h6'>Cours :</Typography>
             </TableCell>
 
-            <TableCell align='center'>
-              <Typography variant='h6'>{coin?.price || 0}</Typography>
+            <TableCell>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Typography variant='h6'>{coin?.price || 0}</Typography>
+                <Euro fontSize='6px' />
+              </Box>
             </TableCell>
           </TableRow>
           <TableRow>
@@ -138,7 +142,7 @@ const SellForm = () => {
               <Typography variant='h6'>Montant :</Typography>
             </TableCell>
 
-            <TableCell align='center'>
+            <TableCell>
               <Typography variant='h6'>{wallet?.amount || 0}</Typography>
             </TableCell>
           </TableRow>
@@ -147,12 +151,11 @@ const SellForm = () => {
               <Typography variant='h6'>Valeurs :</Typography>
             </TableCell>
 
-            <TableCell
-              align='center'
-              sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-            >
-              <Typography variant='h6'>{wallet?.balance || 0}</Typography>
-              <Euro fontSize='6px' />
+            <TableCell>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Typography variant='h6'>{wallet?.balance || 0}</Typography>
+                <Euro fontSize='6px' />
+              </Box>
             </TableCell>
           </TableRow>
           <TableRow>
@@ -160,7 +163,7 @@ const SellForm = () => {
               <Typography variant='h6'>Votre plus-value :</Typography>
             </TableCell>
 
-            <TableCell align='center'>
+            <TableCell>
               <Typography
                 variant='h6'
                 sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -171,9 +174,9 @@ const SellForm = () => {
                 }
               >
                 {(
-                  (coin.price - values.price / values.amount) *
-                  values.amount
-                ).toFixed(2) || 0}
+                  (coin.price - values.price / values.amount) * values.amount ||
+                  0
+                ).toFixed(2)}
                 <Euro fontSize='6px' />
               </Typography>
             </TableCell>

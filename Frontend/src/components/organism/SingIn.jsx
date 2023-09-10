@@ -68,9 +68,6 @@ export default function SignIn() {
         <div>
           <Image src={'/bitchest_logo.png'} width={'300px'} height={'150px'} />
         </div>
-        <Typography component='h1' variant='h5'>
-          Connexion
-        </Typography>
         {!!errors?.email && (
           <Box
             component='div'
@@ -93,7 +90,7 @@ export default function SignIn() {
             required
             fullWidth
             id='email'
-            label='Email Address'
+            label='Email'
             name='email'
             autoComplete='email'
             autoFocus
@@ -106,7 +103,7 @@ export default function SignIn() {
             required
             fullWidth
             name='password'
-            label='Password'
+            label='Mot de passe'
             type={showPassword ? 'text' : 'password'}
             id='password'
             autoComplete='current-password'

@@ -62,7 +62,9 @@ const columns = [
   {
     id: 'role',
     label: (
-      <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <Box
+        sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
         <Badge />
         <Typography fontSize='12px'>Role</Typography>{' '}
       </Box>
@@ -131,7 +133,7 @@ function UsersPage() {
                 margin='normal'
                 fullWidth
                 id='search'
-                label='search'
+                label='Rechercher'
                 name='search'
                 autoComplete='search'
                 autoFocus
@@ -140,7 +142,7 @@ function UsersPage() {
               />
             </FormControl>
             <FormControl sx={{ mx: 1 }} variant='standard'>
-              <InputLabel id='demo-simple-select-label'>filtres</InputLabel>
+              <InputLabel id='demo-simple-select-label'>Filtres</InputLabel>
               <Select
                 labelId='filter'
                 id='filter'
@@ -231,6 +233,10 @@ function UsersPage() {
                                       dispatch(
                                         showDialogAction({
                                           formName: 'userForm',
+                                          formProps: {
+                                            id: row.id,
+                                            isEdit: true,
+                                          },
                                           dialogProps: {
                                             submitLabel: 'Modifier',
                                           },
@@ -284,6 +290,11 @@ function UsersPage() {
           page={page - 1}
           onPageChange={handlePageChange}
           onRowsPerPageChange={handleChangeRows}
+          labelDisplayedRows={({ from, to, count }) => {
+            return `${from} - ${to} / ${
+              count !== -1 ? count : `more than ${to}`
+            }`
+          }}
         />
       </Paper>
     </>

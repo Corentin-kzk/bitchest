@@ -47,10 +47,6 @@ function WalletPage() {
   const cryptoWalletRef = useRef({ series: [], labels: [] })
   const [chartRenderType, setChartRenderType] = useState('crypto')
   const [historyRenderType, setHistoryRenderType] = useState('all')
-  console.log(
-    '🚀 ~ file: WalletPage.jsx:46 ~ WalletPage ~ historyRenderType:',
-    historyRenderType
-  )
   const [page, setPage] = useState(1)
   const [cryptoHistoryId, setCryptoHistoryID] = useState(null)
 
@@ -198,7 +194,7 @@ function WalletPage() {
                       <TableCell>Type</TableCell>
                       <TableCell>Quantité</TableCell>
                       <TableCell>Prix</TableCell>
-                      <TableCell>Profit</TableCell>
+                      <TableCell align='center'>Profit</TableCell>
                       <TableCell colSpan={2} align='center'>
                         {" Date d'achat / vente"}
                       </TableCell>
@@ -264,11 +260,12 @@ function WalletPage() {
                                   <Euro fontSize='6px' />
                                 </Box>
                               </TableCell>
-                              <TableCell scope='row'>
+                              <TableCell scope='row' align='center'>
                                 <Box
                                   sx={{
                                     display: 'flex',
                                     alignItems: 'center',
+                                    justifyContent: 'center',
                                     gap: '5px',
                                   }}
                                 >
@@ -335,6 +332,11 @@ function WalletPage() {
                               rowsPerPage={transactions.per_page}
                               page={page - 1}
                               onPageChange={handlePageChange}
+                              labelDisplayedRows={({ from, to, count }) => {
+                                return `${from} - ${to} / ${
+                                  count !== -1 ? count : `more than ${to}`
+                                }`
+                              }}
                             />
                           </TableRow>
                         </TableFooter>

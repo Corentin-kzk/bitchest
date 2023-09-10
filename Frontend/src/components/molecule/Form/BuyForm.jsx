@@ -120,56 +120,47 @@ const BuyForm = () => {
         <TableBody>
           <TableRow>
             <TableCell>
-              <Typography variant='h6'>
-                <QueryStats />
-              </Typography>
+              <Typography variant='h6'>Cours:</Typography>
             </TableCell>
-            <TableCell
-              sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-            >
-              <Typography variant='h6'>{coin.price}</Typography>
-              <Euro fontSize='6px' />
+            <TableCell>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Typography variant='h6'>{coin.price}</Typography>
+                <Euro fontSize='6px' />
+              </Box>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <Typography variant='h6'>
-                <Wallet />
-              </Typography>
+              <Typography variant='h6'>Solde :</Typography>
             </TableCell>
-            <TableCell
-              sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-            >
-              <Typography variant='h6'>
-                {toNumber(user.wallet.balance).toLocaleString()}
-              </Typography>
-              <Euro fontSize='6px' />
+            <TableCell>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Typography variant='h6'>
+                  {toNumber(user.wallet.balance).toLocaleString()}
+                </Typography>
+                <Euro fontSize='6px' />
+              </Box>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <Typography variant='h6'>
-                <Savings />
-              </Typography>
+              <Typography variant='h6'>Solde apres achat :</Typography>
             </TableCell>
-            <TableCell
-              sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
-            >
-              <Typography variant='h6'>
-                {' '}
-                {(
-                  toNumber(user.wallet.balance) -
-                  values.amount * coin.price
-                ).toLocaleString()}
-              </Typography>
-              <Euro fontSize='6px' />
+            <TableCell>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Typography variant='h6'>
+                  {(
+                    toNumber(user.wallet.balance) -
+                    values.amount * coin.price
+                  ).toLocaleString()}
+                </Typography>
+                <Euro fontSize='6px' />
+              </Box>
             </TableCell>
           </TableRow>
           <TableRow>
             <TableCell>
-              <Typography variant='h6'>
-                <CurrencyExchange />
-              </Typography>
+              <Typography variant='h6'>Valeurs :</Typography>
             </TableCell>
             <TableCell
               sx={{ display: 'flex', alignItems: 'center', gap: '4px' }}
@@ -186,7 +177,7 @@ const BuyForm = () => {
       <TextField
         id='amount'
         name='amount'
-        label={`montant de ${coin.label}`}
+        label={`Montant de ${coin.label}`}
         variant='standard'
         type='number'
         value={values.amount}

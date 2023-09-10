@@ -9,7 +9,12 @@ const AlertRef = forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant='filled' {...props} />
 })
 
-function Alert({ showAlert, alertMessage, hideAlert, alertStatus }) {
+function Alert({
+  showAlert,
+  alertMessage,
+  hideAlert,
+  alertStatus = 'success',
+}) {
   const handleClose = (_, reason) => {
     if (reason === 'clickaway') {
       return
@@ -30,13 +35,6 @@ function Alert({ showAlert, alertMessage, hideAlert, alertStatus }) {
   )
 }
 
-Alert.propTypes = {
-  showAlert: PropTypes.bool.isRequired,
-  alertMessage: PropTypes.string.isRequired,
-  hideAlert: PropTypes.func.isRequired,
-  alertStatus: PropTypes.oneOf(['error', 'warning', 'info', 'success'])
-    .isRequired,
-}
 const mapStateToProps = (state) => {
   return {
     showAlert: state.alert.showAlert,

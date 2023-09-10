@@ -80,7 +80,7 @@ const IndexPage = () => {
               margin='normal'
               fullWidth
               id='search'
-              label='search'
+              label='Rechercher'
               name='search'
               autoComplete='search'
               autoFocus

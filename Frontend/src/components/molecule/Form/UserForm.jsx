@@ -120,6 +120,7 @@ export default function UserForm() {
               onBlur={formik.handleBlur}
               error={!!errors.name}
               helperText={errors.name}
+              required
             />
             <TextField
               id='email'
@@ -130,6 +131,7 @@ export default function UserForm() {
               onBlur={formik.handleBlur}
               error={!!errors.email}
               helperText={errors.email}
+              required
             />
           </Box>
           <FormControl fullWidth sx={{ mt: 1 }}>

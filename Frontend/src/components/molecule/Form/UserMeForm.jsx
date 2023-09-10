@@ -167,7 +167,7 @@ export default function UserMeForm() {
                 }}
               >
                 <Typography component={'h1'} variant='h4'>
-                  Modifiez votre compte
+                  Modifier votre compte
                 </Typography>
                 <Box
                   sx={{

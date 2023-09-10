@@ -8,9 +8,10 @@ export const globalError = {
   negativeBalance: 'Le solde est insuffisant.',
   negativeValue: 'Le montant ne peut etre négatifs',
   requiredAmount: 'Le montant est requis',
-  nameRequired: 'Le nom du user est obligatoire',
+  nameRequired: "Le nom de l'utilisateur est requis",
   passwordMatch: 'Les mots de passe ne sont pas identiques',
   passwordMinLength: 'Le mot de passe doit contenir au moins 6 caractères',
+  confirmPasswordRequired: 'La confirmation du mot de passe est requise',
 }
 
 export const ApiError = {

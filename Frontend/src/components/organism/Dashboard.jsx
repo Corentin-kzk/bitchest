@@ -1,5 +1,4 @@
 import { styled, useTheme } from '@mui/material/styles'
-import CssBaseline from '@mui/material/CssBaseline'
 import MuiDrawer from '@mui/material/Drawer'
 import Box from '@mui/material/Box'
 import MuiAppBar from '@mui/material/AppBar'
@@ -299,7 +298,7 @@ export default function Dashboard() {
                   <ListItemIcon>
                     <Settings />
                   </ListItemIcon>
-                  <ListItemText primary='Paramètre' />
+                  <ListItemText primary='Paramètres' />
                 </ListItemButton>
               </>
             )}

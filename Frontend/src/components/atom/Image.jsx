@@ -22,10 +22,4 @@ const Image = ({ src, width, height, props }) => {
   )
 }
 
-Image.propTypes = {
-  src: PropTypes.string.isRequired,
-  width: PropTypes.number | PropTypes.string,
-  height: PropTypes.number | PropTypes.string,
-}
-
 export default Image

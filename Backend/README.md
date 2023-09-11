@@ -1,40 +1,55 @@
-## Backend Laravel
+# Bitchest Backend
 
-Laravel is a web application framework used here API oriented to communicate easily with our database.
+## Configuration requise
+
+Assurez-vous d'avoir les éléments suivants installés sur votre machine :
+
+-   [XAMPP](https://www.apachefriends.org/index.html) (ou MAMP, WAMP)
+-   [Composer](https://getcomposer.org/download/)
+-   [PHP](https://www.php.net/downloads.php) (version recommandée : PHP 7.4 ou supérieure)
 
 ## Installation
 
-Clone the repository and install the dependencies.
-We will assume here you have a local developpment environment with PHP and Composer installed, and first want to run the project locally in developpement env.
+1.  Clonez ce dépôt dans le répertoire de votre choix :
 
-If you need to install PHP and Composer, you can follow the instructions on the official documentation :
+    git clone https://github.com/Corentin-kzk/bitchest.git
 
--   [PHP](https://www.php.net/manual/fr/install.php)
--   [Composer](https://getcomposer.org/download/)
--   [Laravel](https://laravel.com/docs/10.x/installation)
+    cd votre-projet
 
-`bash
-git clone
-composer install
-cp .env.example .env
-php artisan key:generate
-`
+2.  Copiez le fichier `.env.example` pour créer un fichier `.env` :
 
-If you are in a local developpment environment, you can use the following command to create a local database.
+`cp .env.example .env`
 
-`bash
-php artisan migrate:fresh --seed
-`
+3.  Générez une nouvelle clé d'application :
 
-## Usage
+`php artisan key:generate`
 
-`bash
-php artisan serve
-`
+4.  Configurez votre base de données dans le fichier `.env`. Utiliser MySQL avec XAMPP, modifiez les informations de la base de données comme suit :
+
+`DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=votre_base_de_donnees
+DB_USERNAME=votre_nom_utilisateur
+DB_PASSWORD=votre_mot_de_passe`
+
+5.  Installez les dépendances PHP en utilisant Composer :
+
+`composer install`
+
+6.  Exécutez les migrations pour créer les tables de base de données :
+
+`php artisan migrate --seed`
+
+7.  Lancez le serveur de développement :
+
+`php artisan serve`
+
+Votre application Laravel devrait maintenant être accessible à l'adresse [http://localhost:8000](http://localhost:8000/).
 
 ## Roadmap
 
-This is early development version. I am currently working on the following features:
+Ceci est une version de développement précoce. Je travaille actuellement sur les fonctionnalités suivantes :
 
 -   [x] Setting up the database. (Seeders, Migrations, Models)
 -   [x] Setting up the API routes.
@@ -46,11 +61,6 @@ This is early development version. I am currently working on the following featu
 -   [x] CRUD system for users.
 -   [x] Setting up requests about transactions. (Buy/Sell currencies)
 
-### Main Front functionalities
+## Contributions
 
--   [x] Login and logout system.
--   [x] Fetching & Displaying user and currencies data.
--   [x] Creating currencies charts to follow actual trends.
--   [x] Create an admin dashboard to manage users.
--   [x] Create a user dashboard to manage his wallet.
--   [x] Create a system to trade currencies between the app and the user.
+Les contributions sont les bienvenues ! Si vous souhaitez contribuer à ce projet, veuillez soumettre une pull request.

@@ -89,7 +89,9 @@ function App() {
           <CssBaseline />
         </ThemeProvider>
       </Provider>
-      <ReactQueryDevtools initialIsOpen={true} />
+      {import.meta.env.APP_MODE === 'Development' && (
+        <ReactQueryDevtools initialIsOpen={true} />
+      )}
     </QueryClientProvider>
   )
 }

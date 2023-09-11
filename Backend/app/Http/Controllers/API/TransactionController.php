@@ -10,7 +10,6 @@ use App\Models\Wallet;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-use function PHPUnit\Framework\isEmpty;
 
 class TransactionController extends Controller
 {
@@ -46,6 +45,7 @@ class TransactionController extends Controller
 
     public function buyCrypto(Request $request)
     {
+        //Validate data from request
         $validator = Validator::make($request->all(), [
             'amount' => 'required|numeric|min:0.01',
             'id' => 'required|integer|min:1|exists:crypto_currencies,id',
@@ -54,19 +54,22 @@ class TransactionController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
+        //Retrieved logged user
         $user = auth()->user();
+        //retrieved cryptocurrency
         $crypto = CryptoCurrency::find($request->id);
 
         if (!$crypto) {
             return response()->json(['message' => 'Crypto not found'], 404);
         }
-
+        //Calculation of Crypto currency based on it's amount and price
         $price = $request->amount * $crypto->price;
+
         if ($user->wallet->balance - $price < 0) {
             return response()->json(['message' => 'Insufficient funds'], 400);
         }
 
-
+        //Retrieving or creating cryptoWallet
         $cryptoWallet = cryptoWallet::firstOrCreate(
             [
                 'crypto_id' => $crypto->id,
@@ -85,7 +88,7 @@ class TransactionController extends Controller
             $cryptoWallet->save();
         }
 
-
+        //Create a new Transaction
         $transaction = new Transaction();
         $transaction->crypto_id = $crypto->id;
         $transaction->wallet_id = $user->wallet->id;
@@ -93,6 +96,7 @@ class TransactionController extends Controller
         $transaction->price = $price;
         $transaction->type = 'buy';
         $transaction->save();
+
 
         $user->wallet->balance -= $price;
         $user->wallet->save();
@@ -102,6 +106,7 @@ class TransactionController extends Controller
 
     public function sellCrypto(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
             'transactionId' => 'required|integer|min:1|exists:transactions,id',
             'cryptoId' => 'required|integer|min:1|exists:crypto_currencies,id',
@@ -109,7 +114,9 @@ class TransactionController extends Controller
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 400);
         }
+
         $user = auth()->user();
+
         $crypto = CryptoCurrency::find($request->cryptoId);
 
         if (!$crypto) {
@@ -120,6 +127,7 @@ class TransactionController extends Controller
 
         if (!$transaction)
             return response()->json(['message' => 'Transaction not found'], 404);
+
         $cryptoWallet = cryptoWallet::where('crypto_id', $crypto->id)->where('wallet_id', $user->wallet->id)->first();
 
         if (!$cryptoWallet)
